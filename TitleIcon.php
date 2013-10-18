@@ -22,11 +22,13 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-/**
-* To activate the functionality of this extension include the following
-* in your LocalSettings.php file:
-* include_once("$IP/extensions/TitleIcon/TitleIcon.php");
-*/
+if (!defined('MEDIAWIKI')) {
+	die('<b>Error:</b> This file is part of a MediaWiki extension and cannot be run standalone.');
+}
+
+if (version_compare($wgVersion, '1.21', 'lt')) {
+	die('<b>Error:</b> This version of TitleIcon is only compatible with MediaWiki 1.21 or above.');
+}
 
 $wgExtensionCredits['parserhook'][] = array (
 	'name' => 'Title Icon',
