@@ -73,12 +73,22 @@ class TitleIcon {
 		global $wgTitle;
 		$iconhtml = self::getIconHTML($wgTitle);
 		if (strlen($iconhtml) > 0) {
-			$text = $iconhtml . self::getPageTitle($wgTitle);
-			$script =<<<END
+			global $TitleIcon_UseDisplayTitle;
+			if ($TitleIcon_UseDisplayTitle) {
+				$title = self::getPageTitle($wgTitle);
+				$script =<<<END
 jQuery(document).ready(function() {
-	jQuery('#firstHeading').html("$text");
+	jQuery('#firstHeading').html("$iconhtml" + "$title");
 });
 END;
+			} else {
+				$script =<<<END
+jQuery(document).ready(function() {
+	var title = jQuery('#firstHeading').html();
+	jQuery('#firstHeading').html("$iconhtml" + title);
+});
+END;
+			}
 			$script = '<script type="text/javascript">' . $script . "</script>";
 			global $wgOut;
 			$wgOut->addScript($script);
