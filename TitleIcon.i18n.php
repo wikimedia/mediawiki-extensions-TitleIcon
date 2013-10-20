@@ -28,6 +28,43 @@ $messages['en'] = array(
 	'titleicon-desc' => 'Displays icon in title on pages and in search results'
 );
 
+/** Message documentation (Message documentation)
+ */
 $messages['qqq'] = array(
-	'titleicon-desc' => '{{desc|name=Title Icon|url=http://www.mediawiki.org/wiki/Extension:TitleIcon}}'
+	'titleicon-desc' => '{{desc|name=Title Icon|url=http://www.mediawiki.org/wiki/Extension:TitleIcon}}',
+);
+
+/** Arabic (العربية)
+ * @author مشعل الحربي
+ */
+$messages['ar'] = array(
+	'titleicon-desc' => 'تعرض أيقونة في عنواين الصفحات ونتائج البحث',
+);
+
+/** German (Deutsch)
+ * @author Metalhead64
+ */
+$messages['de'] = array(
+	'titleicon-desc' => 'Zeigt ein Symbol in Seitentiteln und Suchergebnissen an',
+);
+
+/** Macedonian (македонски)
+ * @author Bjankuloski06
+ */
+$messages['mk'] = array(
+	'titleicon-desc' => 'Прикажува икона во насловите на страниците и резултатите од пребарување',
+);
+
+/** Russian (русский)
+ * @author Okras
+ */
+$messages['ru'] = array(
+	'titleicon-desc' => 'Отображает значок в заголовке на страницах и в результатах поиска',
+);
+
+/** Ukrainian (українська)
+ * @author Andriykopanytsia
+ */
+$messages['uk'] = array(
+	'titleicon-desc' => 'Відображає піктограму в заголовку на сторінках і в результатах пошуку',
 );
