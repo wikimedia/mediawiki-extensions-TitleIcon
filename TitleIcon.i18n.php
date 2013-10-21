@@ -48,6 +48,20 @@ $messages['de'] = array(
 	'titleicon-desc' => 'Zeigt ein Symbol in Seitentiteln und Suchergebnissen an',
 );
 
+/** Japanese (日本語)
+ * @author Shirayuki
+ */
+$messages['ja'] = array(
+	'titleicon-desc' => 'ページのタイトルおよび検索結果にアイコンを表示する',
+);
+
+/** Luxembourgish (Lëtzebuergesch)
+ * @author Robby
+ */
+$messages['lb'] = array(
+	'titleicon-desc' => "Weist en 'icon' am Titel vu Säiten an an de Resultater vum Sichen",
+);
+
 /** Macedonian (македонски)
  * @author Bjankuloski06
  */
