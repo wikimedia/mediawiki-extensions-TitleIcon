@@ -41,6 +41,13 @@ $messages['ar'] = array(
 	'titleicon-desc' => 'تعرض أيقونة في عنواين الصفحات ونتائج البحث',
 );
 
+/** Asturian (asturianu)
+ * @author Xuacu
+ */
+$messages['ast'] = array(
+	'titleicon-desc' => 'Ver un iconu nel títulu nes páxines y nos resultaos de guetes',
+);
+
 /** German (Deutsch)
  * @author Metalhead64
  */
