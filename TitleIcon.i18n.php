@@ -55,6 +55,20 @@ $messages['de'] = array(
 	'titleicon-desc' => 'Zeigt ein Symbol in Seitentiteln und Suchergebnissen an',
 );
 
+/** French (français)
+ * @author NemesisIII
+ */
+$messages['fr'] = array(
+	'titleicon-desc' => "Affiche l'icône dans le titre des pages et dans les résultats de recherches",
+);
+
+/** Italian (italiano)
+ * @author Beta16
+ */
+$messages['it'] = array(
+	'titleicon-desc' => "Mostra un'icona nel titolo delle pagine e nei risultati della ricerca",
+);
+
 /** Japanese (日本語)
  * @author Shirayuki
  */
