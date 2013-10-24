@@ -76,6 +76,13 @@ $messages['ja'] = array(
 	'titleicon-desc' => 'ページのタイトルおよび検索結果にアイコンを表示する',
 );
 
+/** Korean (한국어)
+ * @author Hym411
+ */
+$messages['ko'] = array(
+	'titleicon-desc' => '문서와 검색 결과에 아이콘을 표시합니다',
+);
+
 /** Luxembourgish (Lëtzebuergesch)
  * @author Robby
  */
