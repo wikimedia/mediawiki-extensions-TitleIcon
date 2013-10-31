@@ -55,11 +55,25 @@ $messages['de'] = array(
 	'titleicon-desc' => 'Zeigt ein Symbol in Seitentiteln und Suchergebnissen an',
 );
 
+/** Spanish (español)
+ * @author Fitoschido
+ */
+$messages['es'] = array(
+	'titleicon-desc' => 'Muestra un icono en el título de las páginas y los resultados de búsquedas',
+);
+
 /** French (français)
  * @author NemesisIII
  */
 $messages['fr'] = array(
 	'titleicon-desc' => "Affiche l'icône dans le titre des pages et dans les résultats de recherches",
+);
+
+/** Galician (galego)
+ * @author Toliño
+ */
+$messages['gl'] = array(
+	'titleicon-desc' => 'Mostra unha icona no título das páxinas e nos resultados das procuras',
 );
 
 /** Italian (italiano)
@@ -95,6 +109,13 @@ $messages['lb'] = array(
  */
 $messages['mk'] = array(
 	'titleicon-desc' => 'Прикажува икона во насловите на страниците и резултатите од пребарување',
+);
+
+/** Occitan (occitan)
+ * @author Cedric31
+ */
+$messages['oc'] = array(
+	'titleicon-desc' => "Aficha l'icòna dins lo títol de las paginas e dins los resultats de recèrcas",
 );
 
 /** Russian (русский)
