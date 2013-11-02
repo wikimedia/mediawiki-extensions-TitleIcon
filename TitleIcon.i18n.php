@@ -62,6 +62,13 @@ $messages['es'] = array(
 	'titleicon-desc' => 'Muestra un icono en el título de las páginas y los resultados de búsquedas',
 );
 
+/** Persian (فارسی)
+ * @author Ebraminio
+ */
+$messages['fa'] = array(
+	'titleicon-desc' => 'نمادی در عنوان صفحه‌ها در نتایج جستجو نمایش می‌دهد',
+);
+
 /** French (français)
  * @author NemesisIII
  */
