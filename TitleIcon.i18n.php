@@ -99,9 +99,10 @@ $messages['ja'] = array(
 
 /** Korean (한국어)
  * @author Hym411
+ * @author 아라
  */
 $messages['ko'] = array(
-	'titleicon-desc' => '문서와 검색 결과에 아이콘을 표시합니다',
+	'titleicon-desc' => '문서와 검색 결과에 아이콘을 보여줍니다',
 );
 
 /** Luxembourgish (Lëtzebuergesch)
