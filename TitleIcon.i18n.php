@@ -55,6 +55,13 @@ $messages['de'] = array(
 	'titleicon-desc' => 'Zeigt ein Symbol in Seitentiteln und Suchergebnissen an',
 );
 
+/** Lower Sorbian (dolnoserbski)
+ * @author Michawiki
+ */
+$messages['dsb'] = array(
+	'titleicon-desc' => 'Pokazujo symbol w titelach na bokach a w pytańskich wuslědkach',
+);
+
 /** Spanish (español)
  * @author Fitoschido
  */
@@ -81,6 +88,13 @@ $messages['fr'] = array(
  */
 $messages['gl'] = array(
 	'titleicon-desc' => 'Mostra unha icona no título das páxinas e nos resultados das procuras',
+);
+
+/** Upper Sorbian (hornjoserbsce)
+ * @author Michawiki
+ */
+$messages['hsb'] = array(
+	'titleicon-desc' => 'Pokazuje symbol w titulach na stronach a w pytanskich wuslědkach',
 );
 
 /** Italian (italiano)
