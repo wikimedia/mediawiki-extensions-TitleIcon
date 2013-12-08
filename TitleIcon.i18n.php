@@ -133,6 +133,13 @@ $messages['mk'] = array(
 	'titleicon-desc' => 'Прикажува икона во насловите на страниците и резултатите од пребарување',
 );
 
+/** Dutch (Nederlands)
+ * @author Siebrand
+ */
+$messages['nl'] = array(
+	'titleicon-desc' => "Geeft een pictogram weer in de naam van pagina's en in zoekresultaten",
+);
+
 /** Occitan (occitan)
  * @author Cedric31
  */
