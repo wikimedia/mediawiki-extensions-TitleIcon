@@ -30,12 +30,21 @@ if (version_compare($wgVersion, '1.21', 'lt')) {
 	die('<b>Error:</b> This version of TitleIcon is only compatible with MediaWiki 1.21 or above.');
 }
 
-$wgExtensionCredits['parserhook'][] = array (
+$wgExtensionCredits['semantic'][] = array (
 	'name' => 'Title Icon',
 	'version' => '1.0',
-	'author' => 'Cindy Cicalese',
+	'author' => array(
+		'[https://www.mediawiki.org/wiki/User:Cindy.cicalese Cindy Cicalese]'
+	),
 	'descriptionmsg' => 'titleicon-desc',
+	'url' => 'https://www.mediawiki.org/wiki/Extension:Title_Icon',
 );
+
+// Special thanks to
+// [https://www.mediawiki.org/wiki/User:Bernadette Bernadette Clemente]
+// for the original idea that
+// inspired this extension and to Keven Ring
+// for an early implementation of this extension.
 
 $wgExtensionMessagesFiles['TitleIcon'] = __DIR__ . '/TitleIcon.i18n.php';
 
