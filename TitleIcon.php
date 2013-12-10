@@ -78,12 +78,25 @@ class TitleIcon {
 			return true;
 		}
 		self::$m_already_invoked = true;
-		$iconhtml = self::getIconHTML($skin->getTitle());
+		$instance = new TitleIcon;
+		$instance->instanceShowIconInPageTitle($out, $skin);
+		return true;
+	}
+
+	static function showIconInSearchTitle(&$title, &$text, $result, $terms,
+		$page) {
+		$instance = new TitleIcon;
+		$text = $instance->getIconHTML($title) . $instance->getPageLink($title);
+		return true;
+	}
+
+	private function instanceShowIconInPageTitle($out, $skin) {
+		$iconhtml = $this->getIconHTML($skin->getTitle());
 		if (strlen($iconhtml) > 0) {
 			$iconhtml = strtr($iconhtml, array('"' => "'"));
 			global $TitleIcon_UseDisplayTitle;
 			if ($TitleIcon_UseDisplayTitle) {
-				$title = self::getPageTitle($skin->getTitle());
+				$title = $this->getPageTitle($skin->getTitle());
 				$script =<<<END
 jQuery(document).ready(function() {
 	jQuery('#firstHeading').html("$iconhtml" + "$title");
@@ -100,17 +113,10 @@ END;
 			$script = Html::inlineScript($script);
 			$out->addScript($script);
 		}
-		return true;
 	}
 
-	static function showIconInSearchTitle(&$title, &$text, $result, $terms,
-		$page) {
-		$text = self::getIconHTML($title) . self::getPageLink($title);
-		return true;
-	}
-
-	private static function getIconHTML($title) {
-		$icons = self::getIcons($title);
+	private function getIconHTML($title) {
+		$icons = $this->getIcons($title);
 		$iconhtml = "";
 		foreach ($icons as $iconinfo) {
 			$page = $iconinfo["page"];
@@ -150,11 +156,11 @@ END;
 		return $iconhtml;
 	}
 
-	private static function getPageTitle($pagetitle) {
+	private function getPageTitle($pagetitle) {
 		$title = $pagetitle->getPrefixedText();
 		global $TitleIcon_UseDisplayTitle;
 		if ($TitleIcon_UseDisplayTitle) {
-			$displaytitle = self::queryPageDisplayTitle($title);
+			$displaytitle = $this->queryPageDisplayTitle($title);
 			if (strlen($displaytitle) != 0) {
 				$title = $displaytitle;
 			}
@@ -162,17 +168,17 @@ END;
 		return $title;
 	}
 
-	private static function getPageLink($pagetitle) {
+	private function getPageLink($pagetitle) {
 		$pageurl = $pagetitle->getLinkURL();
-		$title = self::getPageTitle($pagetitle);
+		$title = $this->getPageTitle($pagetitle);
 		$pagelink = Html::element('a', array('href' => $pageurl,
 			'title' => $title), $title) . '&nbsp;';
 		return $pagelink;
 	}
 
-	private static function getIcons($title) {
+	private function getIcons($title) {
 		list($hide_page_title_icon, $hide_category_title_icon) =
-			self::queryHideTitleIcon($title->getPrefixedText());
+			$this->queryHideTitleIcon($title->getPrefixedText());
 		$pages = array();
 		if (!$hide_category_title_icon) {
 			$categories = $title->getParentCategories();
@@ -185,7 +191,7 @@ END;
 		}
 		$icons = array();
 		foreach ($pages as $page) {
-			$discoveredIcons = self::queryIconLinksOnPage($page);
+			$discoveredIcons = $this->queryIconLinksOnPage($page);
 			if ($discoveredIcons) {
 				foreach ($discoveredIcons as $icon) {
 					$found = false;
@@ -207,24 +213,24 @@ END;
 		return $icons;
 	}
 
-	private static function queryIconLinksOnPage($page) {
+	private function queryIconLinksOnPage($page) {
 		global $TitleIcon_TitleIconPropertyName;
 		$query = '[[:' . $page . ']]';
-		$result = self::ask($query, $TitleIcon_TitleIconPropertyName, 5);
+		$result = $this->ask($query, $TitleIcon_TitleIconPropertyName, 5);
 		return array_map('trim', explode(",", $result));
 	}
 
-	private static function queryPageDisplayTitle($page) {
+	private function queryPageDisplayTitle($page) {
 		global $TitleIcon_DisplayTitlePropertyName;
 		$query = '[[:' . $page . ']]';
-		$result = self::ask($query, $TitleIcon_DisplayTitlePropertyName, 1);
+		$result = $this->ask($query, $TitleIcon_DisplayTitlePropertyName, 1);
 		return $result;
 	}
 
-	private static function queryHideTitleIcon($page) {
+	private function queryHideTitleIcon($page) {
 		global $TitleIcon_HideTitleIconPropertyName;
 		$query = '[[:' . $page . ']]';
-		$result = self::ask($query, $TitleIcon_HideTitleIconPropertyName, 1);
+		$result = $this->ask($query, $TitleIcon_HideTitleIconPropertyName, 1);
 		switch ($result) {
 		case "page":
 			return array(true, false);
@@ -236,7 +242,7 @@ END;
 		return array(false, false);
 	}
 
-	private static function ask($query, $property, $limit) {
+	private function ask($query, $property, $limit) {
 		$params = array();
 		$params[] = $query;
 		$params[] = "?" . $property;
