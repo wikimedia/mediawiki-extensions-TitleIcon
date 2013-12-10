@@ -34,6 +34,13 @@ $messages['qqq'] = array(
 	'titleicon-desc' => '{{desc|name=Title Icon|url=http://www.mediawiki.org/wiki/Extension:TitleIcon}}',
 );
 
+/** Achinese (Acèh)
+ * @author Rachmat.Wahidi
+ */
+$messages['ace'] = array(
+	'titleicon-desc' => 'Peudeuh ikon bak nan laman ngön hasé mita',
+);
+
 /** Arabic (العربية)
  * @author مشعل الحربي
  */
