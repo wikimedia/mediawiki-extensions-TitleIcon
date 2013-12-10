@@ -42,8 +42,7 @@ $wgExtensionCredits['semantic'][] = array (
 
 // Special thanks to
 // [https://www.mediawiki.org/wiki/User:Bernadette Bernadette Clemente]
-// for the original idea that
-// inspired this extension and to Keven Ring
+// for the original idea that inspired this extension and to Keven Ring
 // for an early implementation of this extension.
 
 $wgExtensionMessagesFiles['TitleIcon'] = __DIR__ . '/TitleIcon.i18n.php';
@@ -79,12 +78,12 @@ class TitleIcon {
 			return true;
 		}
 		self::$m_already_invoked = true;
-		global $wgTitle;
-		$iconhtml = self::getIconHTML($wgTitle);
+		$iconhtml = self::getIconHTML($skin->getTitle());
 		if (strlen($iconhtml) > 0) {
+			$iconhtml = strtr($iconhtml, array('"' => "'"));
 			global $TitleIcon_UseDisplayTitle;
 			if ($TitleIcon_UseDisplayTitle) {
-				$title = self::getPageTitle($wgTitle);
+				$title = self::getPageTitle($skin->getTitle());
 				$script =<<<END
 jQuery(document).ready(function() {
 	jQuery('#firstHeading').html("$iconhtml" + "$title");
@@ -98,9 +97,8 @@ jQuery(document).ready(function() {
 });
 END;
 			}
-			$script = '<script type="text/javascript">' . $script . "</script>";
-			global $wgOut;
-			$wgOut->addScript($script);
+			$script = Html::inlineScript($script);
+			$out->addScript($script);
 		}
 		return true;
 	}
@@ -134,14 +132,19 @@ END;
 				$width = $imagefile->getWidth();
 				$height = $imagefile->getHeight();
 				if ($width < $height) {
-					$dimension = "height='36'";
+					$dimension = 'height';
 				} else {
-					$dimension = "width='36'";
+					$dimension = 'width';
 				}
-				$iconhtml .= "<a href='" . $pageurl .
-					"' title = '" . $tooltip . "'><img alt='" . $tooltip .
-					"' src='" .  $imageurl . "'" . $dimension .
-					" /></a>&nbsp;";
+				$iconhtml .= Html::openElement('a',
+					array(
+						'href' => $pageurl,
+						'title' => $tooltip)) .
+					Html::element('img', array(
+						'alt' => $tooltip,
+						'src' =>  $imageurl,
+						$dimension => '36')) .
+					Html::closeElement('a') . "&nbsp;";
 			}
 		}
 		return $iconhtml;
@@ -162,8 +165,8 @@ END;
 	private static function getPageLink($pagetitle) {
 		$pageurl = $pagetitle->getLinkURL();
 		$title = self::getPageTitle($pagetitle);
-		$pagelink = "<a href='" . $pageurl .	"' title = '" . $title . "'>" .
-			$title . "</a>&nbsp;";
+		$pagelink = Html::element('a', array('href' => $pageurl,
+			'title' => $title), $title) . '&nbsp;';
 		return $pagelink;
 	}
 
