@@ -167,3 +167,10 @@ $messages['ru'] = array(
 $messages['uk'] = array(
 	'titleicon-desc' => 'Відображає піктограму в заголовку на сторінках і в результатах пошуку',
 );
+
+/** Simplified Chinese (中文（简体）‎)
+ * @author Yfdyh000
+ */
+$messages['zh-hans'] = array(
+	'titleicon-desc' => '在页面和搜索结果的标题旁显示图标',
+);
