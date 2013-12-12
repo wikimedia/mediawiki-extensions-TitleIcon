@@ -31,7 +31,7 @@ $messages['en'] = array(
 /** Message documentation (Message documentation)
  */
 $messages['qqq'] = array(
-	'titleicon-desc' => '{{desc|name=Title Icon|url=http://www.mediawiki.org/wiki/Extension:TitleIcon}}',
+	'titleicon-desc' => '{{desc|name=Title Icon|url=http://www.mediawiki.org/wiki/Extension:Title_Icon}}',
 );
 
 /** Achinese (Acèh)
