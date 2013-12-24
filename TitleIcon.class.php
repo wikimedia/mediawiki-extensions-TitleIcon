@@ -77,8 +77,7 @@ END;
 			$imagefile = wfFindFile(Title::newFromText("File:" . $icon));
 			if ($imagefile !== false) {
 				$imageurl = $imagefile->getURL();
-				$pagetitle = Title::newFromText($page);
-				$pageurl = $pagetitle->getLinkURL();
+				$pageurl = $page->getLinkURL();
 				global $TitleIcon_UseFileNameAsToolTip;
 				if ($TitleIcon_UseFileNameAsToolTip) {
 					$tooltip = $icon;
@@ -109,16 +108,15 @@ END;
 		return $iconhtml;
 	}
 
-	private function getPageTitle($pagetitle) {
-		$title = $pagetitle->getPrefixedText();
+	private function getPageTitle($title) {
 		global $TitleIcon_UseDisplayTitle;
 		if ($TitleIcon_UseDisplayTitle) {
 			$displaytitle = $this->queryPageDisplayTitle($title);
 			if (strlen($displaytitle) != 0) {
-				$title = $displaytitle;
+				return $displaytitle;
 			}
 		}
-		return $title;
+		return $title->getPrefixedText();
 	}
 
 	private function getPageLink($pagetitle) {
@@ -131,16 +129,16 @@ END;
 
 	private function getIcons($title) {
 		list($hide_page_title_icon, $hide_category_title_icon) =
-			$this->queryHideTitleIcon($title->getPrefixedText());
+			$this->queryHideTitleIcon($title);
 		$pages = array();
 		if (!$hide_category_title_icon) {
 			$categories = $title->getParentCategories();
 			foreach ($categories as $category => $page) {
-				$pages[] = $category;
+				$pages[] = Title::newFromText($category);
 			}
 		}
 		if (!$hide_page_title_icon) {
-			$pages[] = $title->getPrefixedText();
+			$pages[] = $title;
 		}
 		$icons = array();
 		foreach ($pages as $page) {
@@ -166,47 +164,52 @@ END;
 		return $icons;
 	}
 
-	private function queryIconLinksOnPage($page) {
+	private function queryIconLinksOnPage($title) {
 		global $TitleIcon_TitleIconPropertyName;
-		$query = '[[:' . $page . ']]';
-		$result = $this->ask($query, $TitleIcon_TitleIconPropertyName, 5);
-		return array_map('trim', explode(",", $result));
+		return $this->getPropertyValues($title,
+			$TitleIcon_TitleIconPropertyName);
 	}
 
-	private function queryPageDisplayTitle($page) {
+	private function queryPageDisplayTitle($title) {
 		global $TitleIcon_DisplayTitlePropertyName;
-		$query = '[[:' . $page . ']]';
-		$result = $this->ask($query, $TitleIcon_DisplayTitlePropertyName, 1);
-		return $result;
+		$result = $this->getPropertyValues($title,
+			$TitleIcon_DisplayTitlePropertyName);
+		if (count($result) > 0) {
+			return $result[0];
+		}
+		return "";
 	}
 
-	private function queryHideTitleIcon($page) {
+	private function queryHideTitleIcon($title) {
 		global $TitleIcon_HideTitleIconPropertyName;
-		$query = '[[:' . $page . ']]';
-		$result = $this->ask($query, $TitleIcon_HideTitleIconPropertyName, 1);
-		switch ($result) {
-		case "page":
-			return array(true, false);
-		case "category":
-			return array(false, true);
-		case "all":
-			return array(true, true);
+		$result = $this->getPropertyValues($title,
+			$TitleIcon_HideTitleIconPropertyName);
+		if (count($result) > 0) {
+			switch ($result[0]) {
+			case "page":
+				return array(true, false);
+			case "category":
+				return array(false, true);
+			case "all":
+				return array(true, true);
+			}
 		}
 		return array(false, false);
 	}
 
-	private function ask($query, $property, $limit) {
-		$params = array();
-		$params[] = $query;
-		$params[] = "?" . $property;
-		$params[] = "format=list";
-		$params[] = "mainlabel=-";
-		$params[] = "headers=hide";
-		$params[] = "searchlabel=";
-		$params[] = "limit=" . $limit;
-		$result = SMWQueryProcessor::getResultFromFunctionParams($params,
-			SMW_OUTPUT_WIKI);
-		$result = trim($result);
-		return $result;
+	private function getPropertyValues($title, $propertyname) {
+		$store = smwfGetStore();
+		$subject = SMWDIWikiPage::newFromTitle($title);
+		$data = $store->getSemanticData($subject);
+		$property = SMWDIProperty::newFromUserLabel($propertyname);
+		$values = $data->getPropertyValues($property);
+		$strings = array();
+		foreach ($values as $value) {
+			if ($value->getDIType() == SMWDataItem::TYPE_STRING ||
+				$value->getDIType() == SMWDataItem::TYPE_BLOB) {
+				$strings[] = trim($value->getString());
+			}
+		}
+		return $strings;
 	}
 }
