@@ -126,6 +126,13 @@ $messages['ko'] = array(
 	'titleicon-desc' => '문서와 검색 결과에 아이콘을 보여줍니다',
 );
 
+/** Colognian (Ripoarisch)
+ * @author Purodha
+ */
+$messages['ksh'] = array(
+	'titleicon-desc' => 'Zeisch e Minnibeldsche em Siggetettel un bei dämm, wt bem Söhke eruß kohm.',
+);
+
 /** Luxembourgish (Lëtzebuergesch)
  * @author Robby
  */
