@@ -104,6 +104,13 @@ $messages['hsb'] = array(
 	'titleicon-desc' => 'Pokazuje symbol w titulach na stronach a w pytanskich wuslědkach',
 );
 
+/** Iloko (Ilokano)
+ * @author Lam-ang
+ */
+$messages['ilo'] = array(
+	'titleicon-desc' => 'Agiparang ti ikono iti titulo dagiti panid ken dagiti resulta ti panagbiruk',
+);
+
 /** Italian (italiano)
  * @author Beta16
  */
