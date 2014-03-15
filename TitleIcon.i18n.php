@@ -175,6 +175,13 @@ $messages['ru'] = array(
 	'titleicon-desc' => 'Отображает значок в заголовке на страницах и в результатах поиска',
 );
 
+/** Swedish (svenska)
+ * @author WikiPhoenix
+ */
+$messages['sv'] = array(
+	'titleicon-desc' => 'Visar ikon i sidrubriker och i sökresultat',
+);
+
 /** Ukrainian (українська)
  * @author Andriykopanytsia
  */
