@@ -1,5 +1,4 @@
 <?php
-
 /*
  * Copyright (c) 2013 The MITRE Corporation
  *
@@ -32,7 +31,7 @@ if (version_compare($wgVersion, '1.21', 'lt')) {
 
 $wgExtensionCredits['semantic'][] = array (
 	'name' => 'Title Icon',
-	'version' => '1.1',
+	'version' => '1.2.0',
 	'author' => array(
 		'[https://www.mediawiki.org/wiki/User:Cindy.cicalese Cindy Cicalese]'
 	),
@@ -47,6 +46,7 @@ $wgExtensionCredits['semantic'][] = array (
 
 $wgAutoloadClasses['TitleIcon'] = __DIR__ . '/TitleIcon.class.php';
 
+$wgMessagesDirs['TitleIcon'] = __DIR__ . '/i18n';
 $wgExtensionMessagesFiles['TitleIcon'] = __DIR__ . '/TitleIcon.i18n.php';
 
 $wgHooks['ParserFirstCallInit'][] = 'efTitleIconSetup';
