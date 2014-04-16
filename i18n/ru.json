@@ -1,8 +1,7 @@
 {
-    "@metadata": {
-        "authors": [
-            "Okras"
-        ]
-    },
-    "titleicon-desc": "Отображает значок в заголовке на страницах и в результатах поиска"
+	"@metadata": {
+		"authors": [
+			"Okras"
+		]
+	}
 }

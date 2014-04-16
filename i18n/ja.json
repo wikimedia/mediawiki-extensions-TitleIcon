@@ -1,8 +1,7 @@
 {
-    "@metadata": {
-        "authors": [
-            "Shirayuki"
-        ]
-    },
-    "titleicon-desc": "ページのタイトルおよび検索結果にアイコンを表示する"
+	"@metadata": {
+		"authors": [
+			"Shirayuki"
+		]
+	}
 }

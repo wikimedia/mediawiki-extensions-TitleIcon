@@ -1,8 +1,7 @@
 {
-    "@metadata": {
-        "authors": [
-            "Siebrand"
-        ]
-    },
-    "titleicon-desc": "Geeft een pictogram weer in de naam van pagina's en in zoekresultaten"
+	"@metadata": {
+		"authors": [
+			"Siebrand"
+		]
+	}
 }

@@ -1,8 +1,7 @@
 {
-    "@metadata": {
-        "authors": [
-            "Michawiki"
-        ]
-    },
-    "titleicon-desc": "Pokazuje symbol w titulach na stronach a w pytanskich wuslědkach"
+	"@metadata": {
+		"authors": [
+			"Michawiki"
+		]
+	}
 }
