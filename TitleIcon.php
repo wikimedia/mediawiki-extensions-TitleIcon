@@ -31,7 +31,7 @@ if (version_compare($wgVersion, '1.21', 'lt')) {
 
 $wgExtensionCredits['semantic'][] = array (
 	'name' => 'Title Icon',
-	'version' => '1.2.0',
+	'version' => '1.3',
 	'author' => array(
 		'[https://www.mediawiki.org/wiki/User:Cindy.cicalese Cindy Cicalese]'
 	),
@@ -51,15 +51,42 @@ $wgExtensionMessagesFiles['TitleIcon'] = __DIR__ . '/TitleIcon.i18n.php';
 
 $wgHooks['ParserFirstCallInit'][] = 'efTitleIconSetup';
 
-$TitleIcon_EnableIconInPageTitle = true;
-$TitleIcon_EnableIconInSearchTitle = true;
-$TitleIcon_UseFileNameAsToolTip = true;
-$TitleIcon_TitleIconPropertyName = "Title Icon";
-$TitleIcon_HideTitleIconPropertyName = "Hide Title Icon";
-$TitleIcon_UseDisplayTitle = false;
-$TitleIcon_DisplayTitlePropertyName = "Display Title";
-
 function efTitleIconSetup (& $parser) {
+	global $TitleIcon_EnableIconInPageTitle;
+	if (!isset($TitleIcon_EnableIconInPageTitle)) {
+		$TitleIcon_EnableIconInPageTitle = true;
+	}
+
+	global $TitleIcon_EnableIconInSearchTitle;
+	if (!isset($TitleIcon_EnableIconInSearchTitle)) {
+		$TitleIcon_EnableIconInSearchTitle = true;
+	}
+
+	global $TitleIcon_UseFileNameAsToolTip;
+	if (!isset($TitleIcon_UseFileNameAsToolTip)) {
+		$TitleIcon_UseFileNameAsToolTip = true;
+	}
+
+	global $TitleIcon_TitleIconPropertyName;
+	if (!isset($TitleIcon_TitleIconPropertyName)) {
+		$TitleIcon_TitleIconPropertyName = "Title Icon";
+	}
+
+	global $TitleIcon_HideTitleIconPropertyName;
+	if (!isset($TitleIcon_HideTitleIconPropertyName)) {
+		$TitleIcon_HideTitleIconPropertyName = "Hide Title Icon";
+	}
+
+	global $TitleIcon_UseDisplayTitle;
+	if (!isset($TitleIcon_UseDisplayTitle)) {
+		$TitleIcon_UseDisplayTitle = false;
+	}
+
+	global $TitleIcon_DisplayTitlePropertyName;
+	if (!isset($TitleIcon_DisplayTitlePropertyName)) {
+		$TitleIcon_DisplayTitlePropertyName = "Display Title";
+	}
+
 	global $TitleIcon_EnableIconInPageTitle, $TitleIcon_EnableIconInSearchTitle,
 		$wgHooks;
 	if ($TitleIcon_EnableIconInPageTitle) {
