@@ -26,50 +26,79 @@ class TitleIcon {
 
 	private static $m_already_invoked = false;
 
-	static function showIconInPageTitle(&$out, &$skin) {
+	public static function showIconInPageTitle(&$out, &$skin) {
+
 		if (self::$m_already_invoked) {
 			return true;
 		}
 		self::$m_already_invoked = true;
-		$instance = new TitleIcon;
-		$instance->instanceShowIconInPageTitle($out, $skin);
-		return true;
-	}
 
-	static function showIconInSearchTitle(&$title, &$text, $result, $terms,
-		$page) {
-		$instance = new TitleIcon;
-		$text = $instance->getIconHTML($title) . $instance->getPageLink($title);
-		return true;
-	}
+		$iconhtml = self::getIconHTML($skin->getTitle());
 
-	private function instanceShowIconInPageTitle($out, $skin) {
-		$iconhtml = $this->getIconHTML($skin->getTitle());
 		if (strlen($iconhtml) > 0) {
+
 			$iconhtml = strtr($iconhtml, array('"' => "'"));
-			global $TitleIcon_UseDisplayTitle;
-			if ($TitleIcon_UseDisplayTitle) {
-				$title = $this->getPageTitle($skin->getTitle());
-				$script =<<<END
-jQuery(document).ready(function() {
-	jQuery('#firstHeading').html("$iconhtml" + "$title");
-});
-END;
-			} else {
-				$script =<<<END
+
+			$prefix = Html::openElement('table', array(
+				'style' => 'border:none;'
+			));
+			$prefix .= Html::openElement('tr');
+			$prefix .= Html::openElement('td', array(
+				'style' => 'border:none;'
+			));
+
+			$middle = Html::closeElement('td');
+			$middle .= Html::openElement('td', array(
+				'style' => 'border:none;'
+			));
+
+			$suffix = Html::closeElement('td');
+			$suffix .= Html::closeElement('tr');
+			$suffix .= Html::closeElement('table');
+
+			$script =<<<END
 jQuery(document).ready(function() {
 	var title = jQuery('#firstHeading').html();
-	jQuery('#firstHeading').html("$iconhtml" + title);
+	jQuery('#firstHeading').html('$prefix' + "$iconhtml" + '$middle' + title + '$suffix');
 });
 END;
-			}
 			$script = Html::inlineScript($script);
 			$out->addScript($script);
 		}
+
+		return true;
 	}
 
-	private function getIconHTML($title) {
-		$icons = $this->getIcons($title);
+	public static function showIconInSearchTitle(&$title, &$text, $result,
+		$terms, $page) {
+
+		$pagelink = '[[' . $title->getPrefixedText() . ']]';
+		$pagelink = $GLOBALS['wgParser']->parse($pagelink,
+			$GLOBALS['wgTitle'], new ParserOptions())->getText();
+		$pagelink = substr($pagelink, 3, strlen($pagelink) - 7);
+
+		$text = Html::openElement('table', array(
+			'style' => 'border:none;'
+		));
+		$text .= Html::openElement('tr');
+		$text .= Html::openElement('td', array(
+			'style' => 'vertical-align:top;border:none;'
+		));
+		$text .= self::getIconHTML($title);
+		$text .= Html::closeElement('td');
+		$text .= Html::openElement('td', array(
+			'style' => 'vertical-align:top;border:none;'
+		));
+ 		$text .= $pagelink;
+		$text .= Html::closeElement('td');
+		$text .= Html::closeElement('tr');
+		$text .= Html::closeElement('table');
+
+		return true;
+	}
+
+	private static function getIconHTML($title) {
+		$icons = self::getIcons($title);
 		$iconhtml = "";
 		foreach ($icons as $iconinfo) {
 			$page = $iconinfo["page"];
@@ -78,8 +107,7 @@ END;
 			if ($imagefile !== false) {
 				$imageurl = $imagefile->getURL();
 				$pageurl = $page->getLinkURL();
-				global $TitleIcon_UseFileNameAsToolTip;
-				if ($TitleIcon_UseFileNameAsToolTip) {
+				if ($GLOBALS['TitleIcon_UseFileNameAsToolTip']) {
 					$tooltip = $icon;
 					if (strpos($tooltip, '.' ) !==	false) {
 						$tooltip = substr($tooltip, 0, strpos($tooltip, '.'));
@@ -100,7 +128,7 @@ END;
 						'title' => $tooltip)) .
 					Html::element('img', array(
 						'alt' => $tooltip,
-						'src' =>  $imageurl,
+						'src' => $imageurl,
 						$dimension => '36')) .
 					Html::closeElement('a') . "&nbsp;";
 			}
@@ -108,28 +136,9 @@ END;
 		return $iconhtml;
 	}
 
-	private function getPageTitle($title) {
-		global $TitleIcon_UseDisplayTitle;
-		if ($TitleIcon_UseDisplayTitle) {
-			$displaytitle = $this->queryPageDisplayTitle($title);
-			if (strlen($displaytitle) != 0) {
-				return $displaytitle;
-			}
-		}
-		return $title->getPrefixedText();
-	}
-
-	private function getPageLink($pagetitle) {
-		$pageurl = $pagetitle->getLinkURL();
-		$title = $this->getPageTitle($pagetitle);
-		$pagelink = Html::element('a', array('href' => $pageurl,
-			'title' => $title), $title) . '&nbsp;';
-		return $pagelink;
-	}
-
-	private function getIcons($title) {
+	private static function getIcons($title) {
 		list($hide_page_title_icon, $hide_category_title_icon) =
-			$this->queryHideTitleIcon($title);
+			self::queryHideTitleIcon($title);
 		$pages = array();
 		if (!$hide_category_title_icon) {
 			$categories = $title->getParentCategories();
@@ -142,7 +151,7 @@ END;
 		}
 		$icons = array();
 		foreach ($pages as $page) {
-			$discoveredIcons = $this->queryIconLinksOnPage($page);
+			$discoveredIcons = self::queryIconLinksOnPage($page);
 			if ($discoveredIcons) {
 				foreach ($discoveredIcons as $icon) {
 					$found = false;
@@ -164,26 +173,14 @@ END;
 		return $icons;
 	}
 
-	private function queryIconLinksOnPage($title) {
-		global $TitleIcon_TitleIconPropertyName;
-		return $this->getPropertyValues($title,
-			$TitleIcon_TitleIconPropertyName);
+	private static function queryIconLinksOnPage($title) {
+		return self::getPropertyValues($title,
+			$GLOBALS['TitleIcon_TitleIconPropertyName']);
 	}
 
-	private function queryPageDisplayTitle($title) {
-		global $TitleIcon_DisplayTitlePropertyName;
-		$result = $this->getPropertyValues($title,
-			$TitleIcon_DisplayTitlePropertyName);
-		if (count($result) > 0) {
-			return $result[0];
-		}
-		return "";
-	}
-
-	private function queryHideTitleIcon($title) {
-		global $TitleIcon_HideTitleIconPropertyName;
-		$result = $this->getPropertyValues($title,
-			$TitleIcon_HideTitleIconPropertyName);
+	private static function queryHideTitleIcon($title) {
+		$result = self::getPropertyValues($title,
+			$GLOBALS['TitleIcon_HideTitleIconPropertyName']);
 		if (count($result) > 0) {
 			switch ($result[0]) {
 			case "page":
@@ -197,7 +194,7 @@ END;
 		return array(false, false);
 	}
 
-	private function getPropertyValues($title, $propertyname) {
+	private static function getPropertyValues($title, $propertyname) {
 		$store = smwfGetStore();
 		$subject = SMWDIWikiPage::newFromTitle($title);
 		$data = $store->getSemanticData($subject);

@@ -25,13 +25,13 @@ if (!defined('MEDIAWIKI')) {
 	die('<b>Error:</b> This file is part of a MediaWiki extension and cannot be run standalone.');
 }
 
-if (version_compare($wgVersion, '1.21', 'lt')) {
+if (version_compare($GLOBALS['wgVersion'], '1.21', 'lt')) {
 	die('<b>Error:</b> This version of TitleIcon is only compatible with MediaWiki 1.21 or above.');
 }
 
-$wgExtensionCredits['semantic'][] = array (
+$GLOBALS['wgExtensionCredits']['semantic'][] = array (
 	'name' => 'Title Icon',
-	'version' => '1.3',
+	'version' => '2.0',
 	'author' => array(
 		'[https://www.mediawiki.org/wiki/User:Cindy.cicalese Cindy Cicalese]'
 	),
@@ -44,56 +44,45 @@ $wgExtensionCredits['semantic'][] = array (
 // for the original idea that inspired this extension and to Keven Ring
 // for an early implementation of this extension.
 
-$wgAutoloadClasses['TitleIcon'] = __DIR__ . '/TitleIcon.class.php';
+$GLOBALS['wgAutoloadClasses']['TitleIcon'] = __DIR__ . '/TitleIcon.class.php';
 
-$wgMessagesDirs['TitleIcon'] = __DIR__ . '/i18n';
-$wgExtensionMessagesFiles['TitleIcon'] = __DIR__ . '/TitleIcon.i18n.php';
+$GLOBALS['wgMessagesDirs']['TitleIcon'] = __DIR__ . '/i18n';
+$GLOBALS['wgExtensionMessagesFiles']['TitleIcon'] =
+	__DIR__ . '/TitleIcon.i18n.php';
 
-$wgHooks['ParserFirstCallInit'][] = 'efTitleIconSetup';
+$GLOBALS['wgHooks']['ParserFirstCallInit'][] = 'efTitleIconSetup';
 
 function efTitleIconSetup (& $parser) {
-	global $TitleIcon_EnableIconInPageTitle;
-	if (!isset($TitleIcon_EnableIconInPageTitle)) {
-		$TitleIcon_EnableIconInPageTitle = true;
+
+	if (!isset($GLOBALS['TitleIcon_EnableIconInPageTitle'])) {
+		$GLOBALS['TitleIcon_EnableIconInPageTitle'] = true;
 	}
 
-	global $TitleIcon_EnableIconInSearchTitle;
-	if (!isset($TitleIcon_EnableIconInSearchTitle)) {
-		$TitleIcon_EnableIconInSearchTitle = true;
+	if (!isset($GLOBALS['TitleIcon_EnableIconInSearchTitle'])) {
+		$GLOBALS['TitleIcon_EnableIconInSearchTitle'] = true;
 	}
 
-	global $TitleIcon_UseFileNameAsToolTip;
-	if (!isset($TitleIcon_UseFileNameAsToolTip)) {
-		$TitleIcon_UseFileNameAsToolTip = true;
+	if (!isset($GLOBALS['TitleIcon_UseFileNameAsToolTip'])) {
+		$GLOBALS['TitleIcon_UseFileNameAsToolTip'] = true;
 	}
 
-	global $TitleIcon_TitleIconPropertyName;
-	if (!isset($TitleIcon_TitleIconPropertyName)) {
-		$TitleIcon_TitleIconPropertyName = "Title Icon";
+	if (!isset($GLOBALS['TitleIcon_TitleIconPropertyName'])) {
+		$GLOBALS['TitleIcon_TitleIconPropertyName'] = "Title Icon";
 	}
 
-	global $TitleIcon_HideTitleIconPropertyName;
-	if (!isset($TitleIcon_HideTitleIconPropertyName)) {
-		$TitleIcon_HideTitleIconPropertyName = "Hide Title Icon";
+	if (!isset($GLOBALS['TitleIcon_HideTitleIconPropertyName'])) {
+		$GLOBALS['TitleIcon_HideTitleIconPropertyName'] = "Hide Title Icon";
 	}
 
-	global $TitleIcon_UseDisplayTitle;
-	if (!isset($TitleIcon_UseDisplayTitle)) {
-		$TitleIcon_UseDisplayTitle = false;
+	if ($GLOBALS['TitleIcon_EnableIconInPageTitle']) {
+		$GLOBALS['wgHooks']['BeforePageDisplay'][] =
+			'TitleIcon::showIconInPageTitle';
 	}
 
-	global $TitleIcon_DisplayTitlePropertyName;
-	if (!isset($TitleIcon_DisplayTitlePropertyName)) {
-		$TitleIcon_DisplayTitlePropertyName = "Display Title";
+	if ($GLOBALS['TitleIcon_EnableIconInSearchTitle']) {
+		$GLOBALS['wgHooks']['ShowSearchHitTitle'][] =
+			'TitleIcon::showIconInSearchTitle';
 	}
 
-	global $TitleIcon_EnableIconInPageTitle, $TitleIcon_EnableIconInSearchTitle,
-		$wgHooks;
-	if ($TitleIcon_EnableIconInPageTitle) {
-		$wgHooks['BeforePageDisplay'][] = 'TitleIcon::showIconInPageTitle';
-	}
-	if ($TitleIcon_EnableIconInSearchTitle) {
-		$wgHooks['ShowSearchHitTitle'][] = 'TitleIcon::showIconInSearchTitle';
-	}
 	return true;
 }
