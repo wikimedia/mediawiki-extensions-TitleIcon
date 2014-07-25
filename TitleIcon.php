@@ -31,7 +31,7 @@ if (version_compare($GLOBALS['wgVersion'], '1.21', 'lt')) {
 
 $GLOBALS['wgExtensionCredits']['semantic'][] = array (
 	'name' => 'Title Icon',
-	'version' => '2.0',
+	'version' => '2.1',
 	'author' => array(
 		'[https://www.mediawiki.org/wiki/User:Cindy.cicalese Cindy Cicalese]'
 	),

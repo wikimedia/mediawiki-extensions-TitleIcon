@@ -196,6 +196,7 @@ END;
 
 	private static function getPropertyValues($title, $propertyname) {
 		$store = smwfGetStore();
+		$title = Title::newFromText($title->getPrefixedText()); //remove fragment
 		$subject = SMWDIWikiPage::newFromTitle($title);
 		$data = $store->getSemanticData($subject);
 		$property = SMWDIProperty::newFromUserLabel($propertyname);
