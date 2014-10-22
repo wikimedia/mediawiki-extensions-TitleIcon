@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright (c) 2013 The MITRE Corporation
+ * Copyright (c) 2013-2014 The MITRE Corporation
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -21,17 +21,18 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-if (!defined('MEDIAWIKI')) {
-	die('<b>Error:</b> This file is part of a MediaWiki extension and cannot be run standalone.');
+if ( !defined( 'MEDIAWIKI' ) ) {
+	die( '<b>Error:</b> This file is part of a MediaWiki extension and cannot be run standalone.' );
 }
 
-if (version_compare($GLOBALS['wgVersion'], '1.21', 'lt')) {
-	die('<b>Error:</b> This version of TitleIcon is only compatible with MediaWiki 1.21 or above.');
+if ( version_compare( $GLOBALS['wgVersion'], '1.21', 'lt' ) ) {
+	die( '<b>Error:</b> This version of TitleIcon is only compatible with MediaWiki 1.21 or above.' );
 }
 
 $GLOBALS['wgExtensionCredits']['semantic'][] = array (
+	'path' => __FILE__,
 	'name' => 'Title Icon',
-	'version' => '2.1',
+	'version' => '2.2',
 	'author' => array(
 		'[https://www.mediawiki.org/wiki/User:Cindy.cicalese Cindy Cicalese]'
 	),
@@ -50,39 +51,4 @@ $GLOBALS['wgMessagesDirs']['TitleIcon'] = __DIR__ . '/i18n';
 $GLOBALS['wgExtensionMessagesFiles']['TitleIcon'] =
 	__DIR__ . '/TitleIcon.i18n.php';
 
-$GLOBALS['wgHooks']['ParserFirstCallInit'][] = 'efTitleIconSetup';
-
-function efTitleIconSetup (& $parser) {
-
-	if (!isset($GLOBALS['TitleIcon_EnableIconInPageTitle'])) {
-		$GLOBALS['TitleIcon_EnableIconInPageTitle'] = true;
-	}
-
-	if (!isset($GLOBALS['TitleIcon_EnableIconInSearchTitle'])) {
-		$GLOBALS['TitleIcon_EnableIconInSearchTitle'] = true;
-	}
-
-	if (!isset($GLOBALS['TitleIcon_UseFileNameAsToolTip'])) {
-		$GLOBALS['TitleIcon_UseFileNameAsToolTip'] = true;
-	}
-
-	if (!isset($GLOBALS['TitleIcon_TitleIconPropertyName'])) {
-		$GLOBALS['TitleIcon_TitleIconPropertyName'] = "Title Icon";
-	}
-
-	if (!isset($GLOBALS['TitleIcon_HideTitleIconPropertyName'])) {
-		$GLOBALS['TitleIcon_HideTitleIconPropertyName'] = "Hide Title Icon";
-	}
-
-	if ($GLOBALS['TitleIcon_EnableIconInPageTitle']) {
-		$GLOBALS['wgHooks']['BeforePageDisplay'][] =
-			'TitleIcon::showIconInPageTitle';
-	}
-
-	if ($GLOBALS['TitleIcon_EnableIconInSearchTitle']) {
-		$GLOBALS['wgHooks']['ShowSearchHitTitle'][] =
-			'TitleIcon::showIconInSearchTitle';
-	}
-
-	return true;
-}
+$GLOBALS['wgHooks']['ParserFirstCallInit'][] = 'TitleIcon::setup';

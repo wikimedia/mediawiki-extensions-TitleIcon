@@ -1,7 +1,7 @@
 <?php
 
 /*
- * Copyright (c) 2013 The MITRE Corporation
+ * Copyright (c) 2013-2014 The MITRE Corporation
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -26,188 +26,319 @@ class TitleIcon {
 
 	private static $m_already_invoked = false;
 
-	public static function showIconInPageTitle(&$out, &$skin) {
+	/**
+	 * @since 1.0
+	 *
+	 * @param Parser &$parser
+	 */
+	public static function setup( Parser &$parser ) {
 
-		if (self::$m_already_invoked) {
+		if ( !isset( $GLOBALS['TitleIcon_EnableIconInPageTitle'] ) ||
+			$GLOBALS['TitleIcon_EnableIconInPageTitle'] ) {
+
+			$GLOBALS['wgHooks']['BeforePageDisplay'][] =
+				'TitleIcon::showIconInPageTitle';
+
+		}
+
+		if ( !isset( $GLOBALS['TitleIcon_EnableIconInSearchTitle'] ) ||
+			$GLOBALS['TitleIcon_EnableIconInSearchTitle'] ) {
+
+			$GLOBALS['wgHooks']['ShowSearchHitTitle'][] =
+				'TitleIcon::showIconInSearchTitle';
+
+		}
+
+		if ( !isset( $GLOBALS['TitleIcon_CSSSelector'] ) ) {
+			$GLOBALS['TitleIcon_CSSSelector'] = "#firstHeading";
+		}
+
+		if ( !isset( $GLOBALS['TitleIcon_UseFileNameAsToolTip'] ) ) {
+			$GLOBALS['TitleIcon_UseFileNameAsToolTip'] = true;
+		}
+
+		if ( !isset( $GLOBALS['TitleIcon_TitleIconPropertyName'] ) ) {
+			$GLOBALS['TitleIcon_TitleIconPropertyName'] = "Title Icon";
+		}
+
+		if ( !isset( $GLOBALS['TitleIcon_HideTitleIconPropertyName'] ) ) {
+			$GLOBALS['TitleIcon_HideTitleIconPropertyName'] = "Hide Title Icon";
+		}
+
+		return true;
+	}
+
+	/**
+	 * @since 1.0
+	 *
+	 * @param OutputPage &$out
+	 * @param Skin &$skin
+	 */
+	public static function showIconInPageTitle( OutputPage &$out,
+		Skin &$skin ) {
+
+		if ( self::$m_already_invoked ) {
 			return true;
 		}
 		self::$m_already_invoked = true;
 
-		$iconhtml = self::getIconHTML($skin->getTitle());
+		$instance = new self( $skin->getTitle() );
 
-		if (strlen($iconhtml) > 0) {
+		$instance->setConfiguration(
+			$GLOBALS['TitleIcon_CSSSelector'],
+			$GLOBALS['TitleIcon_UseFileNameAsToolTip'],
+			$GLOBALS['TitleIcon_TitleIconPropertyName'],
+			$GLOBALS['TitleIcon_HideTitleIconPropertyName']
+		);
 
-			$iconhtml = strtr($iconhtml, array('"' => "'"));
+		$instance->handlePageTitle( $out );
 
-			$prefix = Html::openElement('table', array(
-				'style' => 'border:none;'
-			));
-			$prefix .= Html::openElement('tr');
-			$prefix .= Html::openElement('td', array(
-				'style' => 'border:none;'
-			));
+		return true;
 
-			$middle = Html::closeElement('td');
-			$middle .= Html::openElement('td', array(
-				'style' => 'border:none;'
-			));
+	}
 
-			$suffix = Html::closeElement('td');
-			$suffix .= Html::closeElement('tr');
-			$suffix .= Html::closeElement('table');
+	/**
+	 * @since 1.0
+	 *
+	 * @param Title &$title
+	 * @param &$text
+	 * @param SearchResult $result
+	 * @param array $terms,
+	 * @param SpecialSearch $page
+	 */
+	public static function showIconInSearchTitle( Title &$title,
+		&$text, SearchResult $result, array $terms, SpecialSearch $page ) {
 
-			$script =<<<END
-jQuery(document).ready(function() {
-	var title = jQuery('#firstHeading').html();
-	jQuery('#firstHeading').html('$prefix' + "$iconhtml" + '$middle' + title + '$suffix');
-});
+		$instance = new self( $title );
+
+		$instance->setConfiguration(
+			$GLOBALS['TitleIcon_CSSSelector'],
+			$GLOBALS['TitleIcon_UseFileNameAsToolTip'],
+			$GLOBALS['TitleIcon_TitleIconPropertyName'],
+			$GLOBALS['TitleIcon_HideTitleIconPropertyName']
+		);
+
+		$instance->handleSearchTitle( $text );
+
+		return true;
+
+	}
+
+	private $title;
+	private $cssSelector;
+	private $useFileNameAsToolTip;
+	private $titleIconPropertyName;
+	private $hideTitleIconPropertyName;
+
+	/**
+	 * @since 1.0
+	 *
+	 * @param Title $title
+	 */
+	public function __construct( Title $title ) {
+		$this->title = $title;
+	}
+
+	/**
+	 * @since 1.0
+	 *
+	 * @param $cssSelector
+	 * @param $useFileNameAsToolTip
+	 * @param $titleIconPropertyName,
+	 * @param $hideTitleIconPropertyName
+	 *
+	 */
+	public function setConfiguration( $cssSelector, $useFileNameAsToolTip,
+		$titleIconPropertyName, $hideTitleIconPropertyName ) {
+		$this->cssSelector = $cssSelector;
+		$this->useFileNameAsToolTip = $useFileNameAsToolTip;
+		$this->titleIconPropertyName = $titleIconPropertyName;
+		$this->hideTitleIconPropertyName = $hideTitleIconPropertyName;
+	}
+
+	/**
+	 * @since 1.0
+	 *
+	 * @param OutputPage $out
+	 */
+	public function handlePageTitle( OutputPage $out ) {
+
+		$iconhtml = $this->getIconHTML();
+
+		if ( strlen( $iconhtml ) > 0 ) {
+
+			$iconhtml = strtr( $iconhtml, array( "'" => '"' ) );
+
+			$script = <<<END
+jQuery( document ).ready( function() {
+	jQuery( '$this->cssSelector' ).each( function( index ) {
+		var title = jQuery( this ).html();
+		jQuery( this ).html( '$iconhtml' + title );
+	} );
+} );
 END;
-			$script = Html::inlineScript($script);
-			$out->addScript($script);
+			$script = Html::inlineScript( $script );
+			$out->addScript( $script );
+		}
+	}
+
+	/**
+	 * @since 1.0
+	 *
+	 * @param &$text
+	 */
+	public function handleSearchTitle( &$text ) {
+
+		$iconhtml = $this->getIconHTML();
+
+		if ( strlen( $iconhtml ) > 0 ) {
+
+			$text = $iconhtml . Linker::link( $this->title );
+
 		}
 
-		return true;
 	}
 
-	public static function showIconInSearchTitle(&$title, &$text, $result,
-		$terms, $page) {
+	private function getIconHTML() {
 
-		$pagelink = '[[' . $title->getPrefixedText() . ']]';
-		$pagelink = $GLOBALS['wgParser']->parse($pagelink,
-			$GLOBALS['wgTitle'], new ParserOptions())->getText();
-		$pagelink = substr($pagelink, 3, strlen($pagelink) - 7);
+		$icons = $this->getIcons();
 
-		$text = Html::openElement('table', array(
-			'style' => 'border:none;'
-		));
-		$text .= Html::openElement('tr');
-		$text .= Html::openElement('td', array(
-			'style' => 'vertical-align:top;border:none;'
-		));
-		$text .= self::getIconHTML($title);
-		$text .= Html::closeElement('td');
-		$text .= Html::openElement('td', array(
-			'style' => 'vertical-align:top;border:none;'
-		));
- 		$text .= $pagelink;
-		$text .= Html::closeElement('td');
-		$text .= Html::closeElement('tr');
-		$text .= Html::closeElement('table');
-
-		return true;
-	}
-
-	private static function getIconHTML($title) {
-		$icons = self::getIcons($title);
 		$iconhtml = "";
-		foreach ($icons as $iconinfo) {
+		foreach ( $icons as $iconinfo ) {
+
 			$page = $iconinfo["page"];
 			$icon = $iconinfo["icon"];
-			$imagefile = wfFindFile(Title::newFromText("File:" . $icon));
-			if ($imagefile !== false) {
-				$imageurl = $imagefile->getURL();
-				$pageurl = $page->getLinkURL();
-				if ($GLOBALS['TitleIcon_UseFileNameAsToolTip']) {
+
+			$filetitle = Title::newFromText( "File:" . $icon );
+			$imagefile = wfFindFile( $filetitle );
+
+			if ( $imagefile !== false ) {
+
+				if ( $this->useFileNameAsToolTip ) {
 					$tooltip = $icon;
-					if (strpos($tooltip, '.' ) !==	false) {
-						$tooltip = substr($tooltip, 0, strpos($tooltip, '.'));
+					if ( strpos( $tooltip, '.' ) !== false ) {
+						$tooltip =
+							substr( $tooltip, 0, strpos( $tooltip, '.' ) );
 					}
 				} else {
 					$tooltip = $page;
 				}
-				$width = $imagefile->getWidth();
-				$height = $imagefile->getHeight();
-				if ($width < $height) {
-					$dimension = 'height';
-				} else {
-					$dimension = 'width';
-				}
-				$iconhtml .= Html::openElement('a',
-					array(
-						'href' => $pageurl,
-						'title' => $tooltip)) .
-					Html::element('img', array(
-						'alt' => $tooltip,
-						'src' => $imageurl,
-						$dimension => '36')) .
-					Html::closeElement('a') . "&nbsp;";
+
+				$frameParams = array();
+				$frameParams['link-title'] = $page;
+				$frameParams['alt'] = $tooltip;
+				$frameParams['title'] = $tooltip;
+				$handlerParams = array(
+					'width' => '36',
+					'height' => '36'
+				);
+
+				$iconhtml .= Linker::makeImageLink( $GLOBALS['wgParser'],
+					$filetitle, $imagefile, $frameParams, $handlerParams ) .
+					"&nbsp;";
 			}
+
 		}
+
 		return $iconhtml;
+
 	}
 
-	private static function getIcons($title) {
-		list($hide_page_title_icon, $hide_category_title_icon) =
-			self::queryHideTitleIcon($title);
+	private function getIcons() {
+
+		list( $hide_page_title_icon, $hide_category_title_icon ) =
+			$this->queryHideTitleIcon();
+
 		$pages = array();
-		if (!$hide_category_title_icon) {
-			$categories = $title->getParentCategories();
-			foreach ($categories as $category => $page) {
-				$pages[] = Title::newFromText($category);
+
+		if ( !$hide_category_title_icon ) {
+			$categories = $this->title->getParentCategories();
+			foreach ( $categories as $category => $page ) {
+				$pages[] = Title::newFromText( $category );
 			}
 		}
-		if (!$hide_page_title_icon) {
-			$pages[] = $title;
+
+		if ( !$hide_page_title_icon ) {
+			$pages[] = $this->title;
 		}
+
 		$icons = array();
-		foreach ($pages as $page) {
-			$discoveredIcons = self::queryIconLinksOnPage($page);
-			if ($discoveredIcons) {
-				foreach ($discoveredIcons as $icon) {
+		foreach ( $pages as $page ) {
+
+			$discoveredIcons =
+				$this->getPropertyValues( $page, $this->titleIconPropertyName );
+
+			if ( $discoveredIcons ) {
+
+				foreach ( $discoveredIcons as $icon ) {
+
 					$found = false;
-					foreach ($icons as $foundIcon) {
-						if ($foundIcon["icon"] === $icon) {
+					foreach ( $icons as $foundIcon ) {
+
+						if ( $foundIcon["icon"] === $icon ) {
 							$found = true;
 							break;
 						}
+
 					}
-					if ($found == false) {
+
+					if ( $found == false ) {
 						$entry = array();
 						$entry["page"] = $page;
 						$entry["icon"] = $icon;
 						$icons[] = $entry;
 					}
+
 				}
+
 			}
+
 		}
+
 		return $icons;
 	}
 
-	private static function queryIconLinksOnPage($title) {
-		return self::getPropertyValues($title,
-			$GLOBALS['TitleIcon_TitleIconPropertyName']);
-	}
+	private function queryHideTitleIcon() {
 
-	private static function queryHideTitleIcon($title) {
-		$result = self::getPropertyValues($title,
-			$GLOBALS['TitleIcon_HideTitleIconPropertyName']);
-		if (count($result) > 0) {
-			switch ($result[0]) {
+		$result = $this->getPropertyValues( $this->title,
+			$this->hideTitleIconPropertyName );
+
+		if ( count( $result ) > 0 ) {
+
+			switch ( $result[0] ) {
 			case "page":
-				return array(true, false);
+				return array( true, false );
 			case "category":
-				return array(false, true);
+				return array( false, true );
 			case "all":
-				return array(true, true);
+				return array( true, true );
 			}
+
 		}
-		return array(false, false);
+
+		return array( false, false );
 	}
 
-	private static function getPropertyValues($title, $propertyname) {
-		$store = smwfGetStore();
-		$title = Title::newFromText($title->getPrefixedText()); //remove fragment
-		$subject = SMWDIWikiPage::newFromTitle($title);
-		$data = $store->getSemanticData($subject);
-		$property = SMWDIProperty::newFromUserLabel($propertyname);
-		$values = $data->getPropertyValues($property);
+	private function getPropertyValues( Title $title, $propertyname ) {
+
+		$store = \SMW\StoreFactory::getStore();
+
+		// remove fragment
+		$title = Title::newFromText( $title->getPrefixedText() );
+
+		$subject = SMWDIWikiPage::newFromTitle( $title );
+		$data = $store->getSemanticData( $subject );
+		$property = SMWDIProperty::newFromUserLabel( $propertyname );
+		$values = $data->getPropertyValues( $property );
+
 		$strings = array();
-		foreach ($values as $value) {
-			if ($value->getDIType() == SMWDataItem::TYPE_STRING ||
-				$value->getDIType() == SMWDataItem::TYPE_BLOB) {
-				$strings[] = trim($value->getString());
+		foreach ( $values as $value ) {
+			if ( $value->getDIType() == SMWDataItem::TYPE_STRING ||
+				$value->getDIType() == SMWDataItem::TYPE_BLOB ) {
+				$strings[] = trim( $value->getString() );
 			}
 		}
+
 		return $strings;
 	}
 }
