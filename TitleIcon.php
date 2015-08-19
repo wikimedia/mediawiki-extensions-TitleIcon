@@ -38,10 +38,11 @@ $GLOBALS['wgExtensionCredits']['semantic'][] = array (
 	),
 	'descriptionmsg' => 'titleicon-desc',
 	'url' => 'https://www.mediawiki.org/wiki/Extension:Title_Icon',
+	'license-name' => 'MIT'
 );
 
 // Special thanks to
-// [https://www.mediawiki.org/wiki/User:Bernadette Bernadette Clemente]
+// [https://www.mediawiki.org/wiki/User:Bernadette_Clemente Bernadette Clemente]
 // for the original idea that inspired this extension and to Keven Ring
 // for an early implementation of this extension.
 
