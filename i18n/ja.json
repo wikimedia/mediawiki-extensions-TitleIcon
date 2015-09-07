@@ -1,8 +1,9 @@
 {
 	"@metadata": {
 		"authors": [
-			"Shirayuki"
+			"Shirayuki",
+			"2nd-player"
 		]
 	},
-	"titleicon-desc": "ページのタイトルおよび検索結果にアイコンを表示する"
+	"titleicon-desc": "ページおよび検索結果のページ名にアイコンを表示する"
 }
