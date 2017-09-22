@@ -160,7 +160,7 @@ class TitleIcon {
 	public function handleSearchTitle( &$text ) {
 		$iconhtml = $this->getIconHTML();
 		if ( strlen( $iconhtml ) > 0 ) {
-			$text = $iconhtml . Linker::link( $this->title );
+			$text = new HtmlArmor($iconhtml . Linker::link( $this->title ));
 		}
 	}
 
