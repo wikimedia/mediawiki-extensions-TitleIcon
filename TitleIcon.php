@@ -22,6 +22,8 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
+use MediaWiki\MediaWikiServices;
+
 class TitleIcon {
 
 	private static $m_already_invoked = false;
@@ -32,7 +34,6 @@ class TitleIcon {
 	 * @param Parser &$parser
 	 */
 	public static function setup( Parser &$parser ) {
-
 		if ( $GLOBALS['wgTitleIcon_EnableIconInPageTitle'] ) {
 
 			$GLOBALS['wgHooks']['BeforePageDisplay'][] =
@@ -46,8 +47,6 @@ class TitleIcon {
 				'TitleIcon::showIconInSearchTitle';
 
 		}
-
-		return true;
 	}
 
 	/**
@@ -58,9 +57,8 @@ class TitleIcon {
 	 */
 	public static function showIconInPageTitle( OutputPage &$out,
 		Skin &$skin ) {
-
 		if ( self::$m_already_invoked ) {
-			return true;
+			return;
 		}
 		self::$m_already_invoked = true;
 
@@ -74,23 +72,19 @@ class TitleIcon {
 		);
 
 		$instance->handlePageTitle( $out );
-
-		return true;
-
 	}
 
 	/**
 	 * @since 1.0
 	 *
 	 * @param Title &$title
-	 * @param &$text
+	 * @param string &$text
 	 * @param SearchResult $result
-	 * @param array $terms,
+	 * @param array $terms
 	 * @param SpecialSearch $page
 	 */
 	public static function showIconInSearchTitle( Title &$title,
 		&$text, SearchResult $result, array $terms, SpecialSearch $page ) {
-
 		$instance = new self( $title );
 
 		$instance->setConfiguration(
@@ -101,9 +95,6 @@ class TitleIcon {
 		);
 
 		$instance->handleSearchTitle( $text );
-
-		return true;
-
 	}
 
 	private $title;
@@ -124,10 +115,10 @@ class TitleIcon {
 	/**
 	 * @since 1.0
 	 *
-	 * @param $cssSelector
-	 * @param $useFileNameAsToolTip
-	 * @param $titleIconPropertyName,
-	 * @param $hideTitleIconPropertyName
+	 * @param string $cssSelector
+	 * @param bool $useFileNameAsToolTip
+	 * @param string $titleIconPropertyName
+	 * @param string $hideTitleIconPropertyName
 	 *
 	 */
 	public function setConfiguration( $cssSelector, $useFileNameAsToolTip,
@@ -155,17 +146,18 @@ class TitleIcon {
 	/**
 	 * @since 1.0
 	 *
-	 * @param &$text
+	 * @param string &$text
 	 */
 	public function handleSearchTitle( &$text ) {
 		$iconhtml = $this->getIconHTML();
 		if ( strlen( $iconhtml ) > 0 ) {
-			$text = new HtmlArmor($iconhtml . Linker::link( $this->title ));
+			$linkRenderer = MediaWikiServices::getInstance()->getLinkRenderer();
+			$text = new HtmlArmor( $iconhtml .
+				$linkRenderer->makeLink( $this->title ) );
 		}
 	}
 
 	private function getIconHTML() {
-
 		$icons = $this->getIcons();
 
 		$iconhtml = "";
@@ -189,14 +181,14 @@ class TitleIcon {
 					$tooltip = $page;
 				}
 
-				$frameParams = array();
+				$frameParams = [];
 				$frameParams['link-title'] = $page;
 				$frameParams['alt'] = $tooltip;
 				$frameParams['title'] = $tooltip;
-				$handlerParams = array(
+				$handlerParams = [
 					'width' => '36',
 					'height' => '36'
-				);
+				];
 
 				$iconhtml .= Linker::makeImageLink( $GLOBALS['wgParser'],
 					$filetitle, $imagefile, $frameParams, $handlerParams ) .
@@ -206,15 +198,13 @@ class TitleIcon {
 		}
 
 		return $iconhtml;
-
 	}
 
 	private function getIcons() {
-
 		list( $hide_page_title_icon, $hide_category_title_icon ) =
 			$this->queryHideTitleIcon();
 
-		$pages = array();
+		$pages = [];
 
 		if ( !$hide_category_title_icon ) {
 			$categories = $this->title->getParentCategories();
@@ -227,7 +217,7 @@ class TitleIcon {
 			$pages[] = $this->title;
 		}
 
-		$icons = array();
+		$icons = [];
 		foreach ( $pages as $page ) {
 
 			$discoveredIcons =
@@ -248,7 +238,7 @@ class TitleIcon {
 					}
 
 					if ( $found == false ) {
-						$entry = array();
+						$entry = [];
 						$entry["page"] = $page;
 						$entry["icon"] = $icon;
 						$icons[] = $entry;
@@ -264,7 +254,6 @@ class TitleIcon {
 	}
 
 	private function queryHideTitleIcon() {
-
 		$result = $this->getPropertyValues( $this->title,
 			$this->hideTitleIconPropertyName );
 
@@ -272,20 +261,19 @@ class TitleIcon {
 
 			switch ( $result[0] ) {
 			case "page":
-				return array( true, false );
+				return [ true, false ];
 			case "category":
-				return array( false, true );
+				return [ false, true ];
 			case "all":
-				return array( true, true );
+				return [ true, true ];
 			}
 
 		}
 
-		return array( false, false );
+		return [ false, false ];
 	}
 
 	private function getPropertyValues( Title $title, $propertyname ) {
-
 		$store = \SMW\StoreFactory::getStore();
 
 		// remove fragment
@@ -296,7 +284,7 @@ class TitleIcon {
 		$property = SMWDIProperty::newFromUserLabel( $propertyname );
 		$values = $data->getPropertyValues( $property );
 
-		$strings = array();
+		$strings = [];
 		foreach ( $values as $value ) {
 			if ( $value->getDIType() == SMWDataItem::TYPE_STRING ||
 				$value->getDIType() == SMWDataItem::TYPE_BLOB ) {
