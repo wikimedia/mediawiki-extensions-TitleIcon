@@ -1,8 +1,9 @@
 {
 	"@metadata": {
 		"authors": [
-			"Toliño"
+			"Toliño",
+			"Elisardojm"
 		]
 	},
-	"titleicon-desc": "Mostra unha icona no título das páxinas e nos resultados das procuras"
+	"titleicon-desc": "Amosa unha icona no título das páxinas e nos resultados das procuras"
 }
