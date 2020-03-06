@@ -158,6 +158,7 @@ class TitleIcon {
 	}
 
 	private function getIconHTML() {
+		$parser = \MediaWiki\MediaWikiServices::getInstance()->getParser();
 		$icons = $this->getIcons();
 
 		$iconhtml = "";
@@ -190,7 +191,7 @@ class TitleIcon {
 					'height' => '36'
 				];
 
-				$iconhtml .= Linker::makeImageLink( $GLOBALS['wgParser'],
+				$iconhtml .= Linker::makeImageLink( $parser,
 					$filetitle, $imagefile, $frameParams, $handlerParams ) .
 					"&nbsp;";
 			}
