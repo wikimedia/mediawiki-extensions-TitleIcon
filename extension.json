@@ -1,42 +1,69 @@
 {
 	"name": "Title Icon",
-	"version": "4.1.1",
+	"version": "5.0",
 	"author": [
 		"[https://www.mediawiki.org/wiki/User:Cindy.cicalese Cindy Cicalese]"
 	],
 	"url": "https://www.mediawiki.org/wiki/Extension:Title_Icon",
 	"descriptionmsg": "titleicon-desc",
 	"license-name": "MIT",
-	"type": "semantic",
+	"type": "parserhook",
+	"requires": {
+		"MediaWiki": ">= 1.35.0"
+	},
 	"MessagesDirs": {
 		"TitleIcon": [
 			"i18n"
 		]
 	},
-	"AutoloadClasses": {
-		"TitleIcon": "TitleIcon.php"
+	"AutoloadNamespaces": {
+		"MediaWiki\\Extension\\TitleIcon\\": "src"
 	},
-	"ResourceModules": {
-		"ext.TitleIcon": {
-			"scripts": "TitleIcon.js"
+	"Hooks": {
+		"BeforePageDisplay": "main",
+		"ShowSearchHitTitle": "main"
+	},
+	"HookHandlers": {
+		"main": {
+			"class": "MediaWiki\\Extension\\TitleIcon\\MainHookHandler",
+			"services": [
+				"IconManager",
+				"MainConfig",
+				"LinkRenderer"
+			]
 		}
 	},
 	"ResourceFileModulePaths": {
 		"localBasePath": "",
 		"remoteExtPath": "TitleIcon"
 	},
-	"Hooks": {
-		"ParserFirstCallInit": [
-			"TitleIcon::setup"
-		]
+	"ResourceModules": {
+		"ext.TitleIcon": {
+			"scripts": "resources/TitleIcon.js"
+		}
 	},
-	"manifest_version": 1,
+	"ServiceWiringFiles": [
+		"src/ServiceWiring.php"
+	],
 	"config": {
-		"TitleIcon_EnableIconInPageTitle": true,
-		"TitleIcon_EnableIconInSearchTitle": true,
-		"TitleIcon_CSSSelector": "#firstHeading",
-		"TitleIcon_UseFileNameAsToolTip": true,
-		"TitleIcon_TitleIconPropertyName": "Title Icon",
-		"TitleIcon_HideTitleIconPropertyName": "Hide Title Icon"
-	}
+		"TitleIcon_EnableIconInPageTitle": {
+			"value": true
+		},
+		"TitleIcon_EnableIconInSearchTitle": {
+			"value": true
+		},
+		"TitleIcon_CSSSelector": {
+			"value": "#firstHeading"
+		},
+		"TitleIcon_UseFileNameAsToolTip": {
+			"value": true
+		},
+		"TitleIcon_TitleIconPropertyName": {
+			"value": "Title Icon"
+		},
+		"TitleIcon_HideTitleIconPropertyName": {
+			"value": "Hide Title Icon"
+		}
+	},
+	"manifest_version": 2
 }
