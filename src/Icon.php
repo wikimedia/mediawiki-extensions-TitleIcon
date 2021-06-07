@@ -22,8 +22,18 @@
 
 namespace MediaWiki\Extension\TitleIcon;
 
-class Icon {
+use MediaWiki\Json\JsonUnserializable;
+use MediaWiki\Json\JsonUnserializableTrait;
+use MediaWiki\Json\JsonUnserializer;
+
+class Icon implements JsonUnserializable {
+	use JsonUnserializableTrait;
+
 	public const ICON_TYPE_FILE = "file";
+	public const ICON_TYPE_OOUI = "ooui";
+	public const ICON_TYPE_UNICODE = "unicode";
+
+	public const ICON_PROPERTY_NAME = 'titleicons';
 
 	/** @var string */
 	private $page;
@@ -34,15 +44,20 @@ class Icon {
 	/** @var string */
 	private $type;
 
+	/** @var string|null */
+	private $link;
+
 	/**
 	 * @param string $page
 	 * @param string $icon
 	 * @param string $type
+	 * @param string|null $link
 	 */
-	public function __construct( string $page, string $icon, string $type ) {
+	public function __construct( string $page, string $icon, string $type, ?string $link = null ) {
 		$this->page = $page;
 		$this->icon = $icon;
 		$this->type = $type;
+		$this->link = $link;
 	}
 
 	/**
@@ -64,5 +79,53 @@ class Icon {
 	 */
 	public function getType() : string {
 		return $this->type;
+	}
+
+	/**
+	 * @return string|null
+	 */
+	public function getLink() : ?string {
+		return $this->link;
+	}
+
+	/**
+	 * @param string $type
+	 * @return bool
+	 */
+	public static function isValidType( string $type ) : bool {
+		return in_array(
+			$type,
+			[
+				self::ICON_TYPE_FILE,
+				self::ICON_TYPE_OOUI,
+				self::ICON_TYPE_UNICODE
+			]
+		);
+	}
+
+	/**
+	 * @param JsonUnserializer $unserializer
+	 * @param array $json
+	 * @return Icon
+	 */
+	public static function newFromJsonArray( JsonUnserializer $unserializer, array $json ) {
+		return new Icon(
+			$json['page'],
+			$json['icon'],
+			$json['type'],
+			$json['link']
+		);
+	}
+
+	/**
+	 * @return array
+	 */
+	protected function toJsonArray(): array {
+		return [
+			'page' => $this->page,
+			'icon' => $this->icon,
+			'type' => $this->type,
+			'link' => $this->link
+		];
 	}
 }

@@ -30,7 +30,10 @@ return [
 		return new IconManager(
 			$services->getMainConfig(),
 			$services->getParser(),
+			$services->getPageProps(),
 			$services->getRepoGroup(),
+			$services->getLinkRenderer(),
+			$services->getJsonCodec(),
 			new SMWInterface( ExtensionRegistry::getInstance() )
 		);
 	},
