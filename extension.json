@@ -16,14 +16,21 @@
 			"i18n"
 		]
 	},
+	"ExtensionMessagesFiles": {
+		"TitleIconMagic": "i18n/TitleIconMagic.i18n.php"
+	},
 	"AutoloadNamespaces": {
 		"MediaWiki\\Extension\\TitleIcon\\": "src"
 	},
 	"Hooks": {
+		"ParserFirstCallInit": "init",
 		"BeforePageDisplay": "main",
 		"ShowSearchHitTitle": "main"
 	},
 	"HookHandlers": {
+		"init": {
+			"class": "MediaWiki\\Extension\\TitleIcon\\InitHookHandler"
+		},
 		"main": {
 			"class": "MediaWiki\\Extension\\TitleIcon\\MainHookHandler",
 			"services": [
