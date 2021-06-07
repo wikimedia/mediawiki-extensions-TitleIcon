@@ -22,6 +22,7 @@
 
 namespace MediaWiki\Extension\TitleIcon;
 
+use Action;
 use Config;
 use HtmlArmor;
 use MediaWiki\Hook\BeforePageDisplayHook;
@@ -67,9 +68,15 @@ class MainHookHandler implements BeforePageDisplayHook, ShowSearchHitTitleHook {
 			return;
 		}
 
-		$iconhtml = $this->iconManager->getIconHTML( $skin->getTitle() );
-		if ( strlen( $iconhtml ) > 0 ) {
-			$out->addJsConfigVars( 'TitleIconHTML', $iconhtml );
+		$title = $skin->getTitle();
+		$this->iconManager->getIcons(
+			$title,
+			$this->iconManager->getCategories( $title ),
+			Action::getActionName( $skin->getContext() ) !== 'view'
+		);
+		$html = $this->iconManager->getHTML( $title->getPrefixedText() );
+		if ( strlen( $html ) > 0 ) {
+			$out->addJsConfigVars( 'TitleIconHTML', $html );
 			$out->addJsConfigVars( 'TitleIconSelector', $this->config->get( 'TitleIcon_CSSSelector' ) );
 			$out->addModules( 'ext.TitleIcon' );
 		}
@@ -92,9 +99,14 @@ class MainHookHandler implements BeforePageDisplayHook, ShowSearchHitTitleHook {
 			return;
 		}
 
-		$iconhtml = $this->iconManager->getIconHTML( $title );
-		if ( strlen( $iconhtml ) > 0 ) {
-			$titleSnippet = new HtmlArmor( $iconhtml . $this->linkRenderer->makeLink( $title ) );
+		$this->iconManager->getIcons(
+			$title,
+			$this->iconManager->getCategories( $title ),
+			true
+		);
+		$html = $this->iconManager->getHTML( $title->getPrefixedText() );
+		if ( strlen( $html ) > 0 ) {
+			$titleSnippet = new HtmlArmor( $html . $this->linkRenderer->makeLink( $title ) );
 		}
 	}
 }

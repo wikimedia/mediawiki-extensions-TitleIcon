@@ -26,7 +26,10 @@ use Config;
 use MediaWiki\Extension\TitleIcon\Icon;
 use MediaWiki\Extension\TitleIcon\IconManager;
 use MediaWiki\Extension\TitleIcon\SMWInterface;
+use MediaWiki\Json\JsonCodec;
+use MediaWiki\Linker\LinkRenderer;
 use MediaWikiUnitTestCase;
+use PageProps;
 use Parser;
 use PHPUnit\Framework\MockObject\MockObject;
 use RepoGroup;
@@ -60,7 +63,10 @@ class IconManagerTest extends MediaWikiUnitTestCase {
 		return new IconManager(
 			$config,
 			$this->createMock( Parser::class ),
+			$this->createMock( PageProps::class ),
 			$this->createMock( RepoGroup::class ),
+			$this->createMock( LinkRenderer::class ),
+			$this->createMock( JsonCodec::class ),
 			$smwInterface
 		);
 	}
@@ -69,10 +75,12 @@ class IconManagerTest extends MediaWikiUnitTestCase {
 		/** @var Title|MockObject $title */
 		$title = $this->createMock( Title::class );
 		$title->method( 'getPrefixedText' )->willReturn( 'TestPage' );
-		$title->method( 'getParentCategories' )->willReturn( [ 'Category:TestCategory' => 'TestPage' ] );
+		$category = $this->createMock( Title::class );
+		$category->method( 'getPrefixedText' )->willReturn( 'Category:TestCategory' );
 
 		yield [
 			$title,
+			[ $category ],
 			[
 				'TestPage' => [ 'Icon.png' ],
 				'Category:TestCategory' => []
@@ -84,6 +92,7 @@ class IconManagerTest extends MediaWikiUnitTestCase {
 		];
 		yield [
 			$title,
+			[ $category ],
 			[
 				'TestPage' => [ 'Icon1.png' ],
 				'Category:TestCategory' => [ 'Icon2.png' ]
@@ -96,6 +105,7 @@ class IconManagerTest extends MediaWikiUnitTestCase {
 		];
 		yield [
 			$title,
+			[ $category ],
 			[
 				'TestPage' => [ 'Icon1.png' ],
 				'Category:TestCategory' => [ 'Icon2.png' ]
@@ -107,6 +117,7 @@ class IconManagerTest extends MediaWikiUnitTestCase {
 		];
 		yield [
 			$title,
+			[ $category ],
 			[
 				'TestPage' => [ 'Icon1.png' ],
 				'Category:TestCategory' => [ 'Icon2.png' ]
@@ -118,6 +129,7 @@ class IconManagerTest extends MediaWikiUnitTestCase {
 		];
 		yield [
 			$title,
+			[ $category ],
 			[
 				'TestPage' => [ 'Icon1.png' ],
 				'Category:TestCategory' => [ 'Icon2.png' ]
@@ -127,6 +139,7 @@ class IconManagerTest extends MediaWikiUnitTestCase {
 		];
 		yield [
 			$title,
+			[ $category ],
 			[
 				'TestPage' => [ 'Icon1.png' ],
 				'Category:TestCategory' => [ 'Icon2.png' ]
@@ -143,11 +156,17 @@ class IconManagerTest extends MediaWikiUnitTestCase {
 	 * @covers MediaWiki\Extension\TitleIcon\IconManager::getIcons
 	 * @dataProvider provideGetIcons
 	 */
-	public function testGetIcons( Title $title, array $smwIcons, array $hide, array $expected ) {
+	public function testGetIcons(
+		Title $title,
+		array $categories,
+		array $smwIcons,
+		array $hide,
+		array $expected
+	) {
 		$smwInterface = $this->getSMWInterface( $smwIcons, $hide );
 		$manager = $this->getManager( $title, $smwInterface );
 
-		$icons = $manager->getIcons( $title );
+		$icons = $manager->getIcons( $title, $categories, false );
 
 		$this->assertArrayEquals(
 			$icons,
