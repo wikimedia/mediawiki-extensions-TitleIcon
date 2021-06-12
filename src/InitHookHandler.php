@@ -25,7 +25,6 @@ namespace MediaWiki\Extension\TitleIcon;
 use MediaWiki\Hook\ParserFirstCallInitHook;
 use MediaWiki\MediaWikiServices;
 use Parser;
-use Title;
 
 class InitHookHandler implements ParserFirstCallInitHook {
 	/**
@@ -56,7 +55,6 @@ class InitHookHandler implements ParserFirstCallInitHook {
 	 * @param string|null $flag 'page', 'category', or 'all'
 	 */
 	public static function hideTitleIcon( Parser $parser, ?string $flag = null ) {
-		$page = Title::castFromPageReference( $parser->getPage() )->getPrefixedText();
 		MediaWikiServices::getInstance()->getService( "IconManager" )->hideTitleIcon( $flag );
 	}
 
@@ -66,12 +64,16 @@ class InitHookHandler implements ParserFirstCallInitHook {
 	 * @param string|null $link
 	 */
 	public static function handleFile( Parser $parser, ?string $icon = null, ?string $link = null ) {
-		$page = Title::castFromPageReference( $parser->getPage() )->getPrefixedText();
-		MediaWikiServices::getInstance()->getService( "IconManager" )->parseIcons(
-			$page,
+		if ( method_exists( Parser::class, 'getPage' ) ) {
+			$source = $parser->getPage();
+		} else {
+			$source = $parser->getTitle();
+		}
+		MediaWikiServices::getInstance()->getService( "TitleIcon:IconManager" )->parseIcons(
+			$source,
 			Icon::ICON_TYPE_FILE,
 			$icon,
-			$link
+			$link ? MediaWikiServices::getInstance()->getTitleParser()->parseTitle( $link ) : null
 		);
 	}
 
@@ -81,12 +83,16 @@ class InitHookHandler implements ParserFirstCallInitHook {
 	 * @param string|null $link
 	 */
 	public static function handleOOUI( Parser $parser, ?string $icon = null, ?string $link = null ) {
-		$page = Title::castFromPageReference( $parser->getPage() )->getPrefixedText();
-		MediaWikiServices::getInstance()->getService( "IconManager" )->parseIcons(
-			$page,
+		if ( method_exists( Parser::class, 'getPage' ) ) {
+			$source = $parser->getPage();
+		} else {
+			$source = $parser->getTitle();
+		}
+		MediaWikiServices::getInstance()->getService( "TitleIcon:IconManager" )->parseIcons(
+			$source,
 			Icon::ICON_TYPE_OOUI,
 			$icon,
-			$link
+			$link ? MediaWikiServices::getInstance()->getTitleParser()->parseTitle( $link ) : null
 		);
 	}
 
@@ -96,12 +102,16 @@ class InitHookHandler implements ParserFirstCallInitHook {
 	 * @param string|null $link
 	 */
 	public static function handleUnicode( Parser $parser, ?string $icon = null, ?string $link = null ) {
-		$page = Title::castFromPageReference( $parser->getPage() )->getPrefixedText();
-		MediaWikiServices::getInstance()->getService( "IconManager" )->parseIcons(
-			$page,
+		if ( method_exists( Parser::class, 'getPage' ) ) {
+			$source = $parser->getPage();
+		} else {
+			$source = $parser->getTitle();
+		}
+		MediaWikiServices::getInstance()->getService( "TitleIcon:IconManager" )->parseIcons(
+			$source,
 			Icon::ICON_TYPE_UNICODE,
 			$icon,
-			$link
+			$link ? MediaWikiServices::getInstance()->getTitleParser()->parseTitle( $link ) : null
 		);
 	}
 }
