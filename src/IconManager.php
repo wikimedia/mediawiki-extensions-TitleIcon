@@ -29,10 +29,12 @@ use HtmlArmor;
 use Linker;
 use MediaWiki\Json\JsonCodec;
 use MediaWiki\Linker\LinkRenderer;
+use MediaWiki\Linker\LinkTarget;
 use PageProps;
 use Parser;
 use RepoGroup;
 use Title;
+use TitleParser;
 
 class IconManager {
 	/** @var Config */
@@ -40,6 +42,9 @@ class IconManager {
 
 	/** @var Parser */
 	private $parser;
+
+	/** @var TitleParser */
+	private $titleParser;
 
 	/** @var PageProps */
 	private $pageProps;
@@ -68,6 +73,7 @@ class IconManager {
 	/**
 	 * @param Config $config
 	 * @param Parser $parser
+	 * @param TitleParser $titleParser
 	 * @param PageProps $pageProps
 	 * @param RepoGroup $repoGroup
 	 * @param LinkRenderer $linkRenderer
@@ -77,6 +83,7 @@ class IconManager {
 	public function __construct(
 		Config $config,
 		Parser $parser,
+		TitleParser $titleParser,
 		PageProps $pageProps,
 		RepoGroup $repoGroup,
 		LinkRenderer $linkRenderer,
@@ -85,6 +92,7 @@ class IconManager {
 	) {
 		$this->config = $config;
 		$this->parser = $parser;
+		$this->titleParser = $titleParser;
 		$this->pageProps = $pageProps;
 		$this->repoGroup = $repoGroup;
 		$this->linkRenderer = $linkRenderer;
@@ -94,130 +102,134 @@ class IconManager {
 	}
 
 	/**
-	 * @param Title $title
-	 * @return Title[]
+	 * @param LinkTarget $linkTarget
+	 * @return LinkTarget[]
 	 */
-	public function getCategories( Title $title ) {
+	public function getCategories( LinkTarget $linkTarget ) : array {
 		$result = [];
-		$categories = $title->getParentCategories();
+		$categories = Title::newFromLinkTarget( $linkTarget )->getParentCategories();
 		foreach ( $categories as $category => $page ) {
-			$result[] = Title::newFromText( $category );
+			$result[] = $this->titleParser->parseTitle( $category );
 		}
 		return $result;
 	}
 
 	/**
-	 * @param Title $title
-	 * @param Title[] $categories
-	 * @param bool $queryPageProps
+	 * @param LinkTarget $linkTarget
+	 * @param LinkTarget[] $categories
 	 * @return Icon[]
 	 */
-	public function getIcons( Title $title, array $categories, bool $queryPageProps ) : array {
-		$this->queryHideTitleIcon( $title );
+	public function getIcons( LinkTarget $linkTarget, array $categories ) : array {
+		$key = self::getKeyForPage( $linkTarget );
+		if ( !isset( $this->icons[$key] ) ) {
+			$this->icons[$key] = [];
+		}
 
-		$page = $title->getPrefixedText();
-		$queryPages = [];
+		/** @var LinkTarget[] $queryTargets */
+		$queryTargets = [];
 
-		if ( $this->hidePageIcons ) {
-			$this->icons[$page] = [];
-		} else {
-			$queryPages[] = $page;
-			if ( $queryPageProps ) {
-				$this->queryPagePropsIcons( $title );
-			}
+		$this->queryHideTitleIcon( $linkTarget );
+
+		if ( !$this->hidePageIcons ) {
+			$queryTargets[] = $linkTarget;
+			$this->queryPagePropsIcons( $linkTarget );
 		}
 
 		if ( !$this->hideCategoryIcons ) {
 			foreach ( $categories as $category ) {
-				$categoryPage = $category->getPrefixedText();
-				$queryPages[] = $categoryPage;
+				$queryTargets[] = $category;
 				$this->queryPagePropsIcons( $category );
-				if ( isset( $this->icons[$categoryPage] ) ) {
-					foreach ( $this->icons[$categoryPage] as $icon ) {
-						$this->addIcon( $page, $icon );
+				$categoryKey = self::getKeyForPage( $category );
+				if ( isset( $this->icons[$categoryKey] ) ) {
+					foreach ( $this->icons[$categoryKey] as $icon ) {
+						$this->addIcon( $linkTarget, $icon );
 					}
 				}
 			}
 		}
 
-		foreach ( $queryPages as $queryPage ) {
+		foreach ( $queryTargets as $queryTarget ) {
 			$smwIcons = $this->smwInterface->getPropertyValues(
-				$queryPage,
+				$queryTarget,
 				$this->config->get( 'TitleIcon_TitleIconPropertyName' )
 			);
 			foreach ( $smwIcons as $smwIcon ) {
 				$this->addIcon(
-					$page,
-					new Icon( $queryPage, $smwIcon, Icon::ICON_TYPE_FILE )
+					$linkTarget,
+					new Icon( $queryTarget, $smwIcon, Icon::ICON_TYPE_FILE )
 				);
 			}
 		}
 
-		return $this->icons[$page] ?? [];
+		return $this->icons[$key];
 	}
 
 	/**
-	 * @param Title $title
+	 * @param LinkTarget $linkTarget
 	 */
-	private function queryPagePropsIcons( Title $title ) : void {
+	private function queryPagePropsIcons( LinkTarget $linkTarget ) : void {
+		$title = Title::newFromLinkTarget( $linkTarget );
 		$icons = $this->pageProps->getProperties( $title, Icon::ICON_PROPERTY_NAME );
-		$page = $title->getPrefixedText();
-		$pageId = $title->getId();
+		$pageId = $title->getArticleId();
 		if ( $icons && isset( $icons[$pageId] ) ) {
 			$icons = $this->jsonCodec->unserialize( $icons[$pageId] );
-			foreach ( $icons as $icon ) {
-				$icon = $this->jsonCodec->unserialize( $icon );
-				if ( $icon ) {
-					$this->addIcon( $page, $icon );
+			if ( $icons ) {
+				foreach ( $icons as $icon ) {
+					$icon = $this->jsonCodec->unserialize( $icon );
+					if ( $icon ) {
+						$this->addIcon( $linkTarget, $icon );
+					}
 				}
 			}
 		}
 	}
 
 	/**
-	 * @param string $page
+	 * @param LinkTarget $source
 	 * @param string $type
 	 * @param string|null $icon
-	 * @param string|null $link
+	 * @param LinkTarget|null $link
 	 */
-	public function parseIcons( string $page, string $type, ?string $icon, ?string $link ) {
+	public function parseIcons( LinkTarget $source, string $type, ?string $icon, ?LinkTarget $link ) {
 		if ( !$icon ) {
 			return;
 		}
 
-		$this->addIcon( $page, new Icon( $page, $icon, $type, $link ) );
+		$this->addIcon( $source, new Icon( $source, $icon, $type, $link ) );
 
 		$this->parser->getOutput()->setProperty(
 			Icon::ICON_PROPERTY_NAME,
-			$this->jsonCodec->serialize( $this->icons[$page] )
+			$this->jsonCodec->serialize( $this->icons[self::getKeyForPage( $source )] )
 		);
 	}
 
 	/**
-	 * @param string $page
+	 * @param LinkTarget $source
 	 * @param Icon $icon
 	 */
-	public function addIcon( string $page, Icon $icon ) : void {
-		if ( !isset( $this->icons[$page] ) ) {
-			$this->icons[$page] = [];
+	public function addIcon( LinkTarget $source, Icon $icon ) : void {
+		$key = self::getKeyForPage( $source );
+		if ( !isset( $this->icons[$key] ) ) {
+			$this->icons[$key] = [];
 		}
-		foreach ( $this->icons[$page] as $savedIcon ) {
+		foreach ( $this->icons[$key] as $savedIcon ) {
 			if ( $icon->getType() === $savedIcon->getType() && $icon->getIcon() === $savedIcon->getIcon() ) {
 				return;
 			}
 		}
-		$this->icons[$page][] = $icon;
+		$this->icons[$key][] = $icon;
 	}
 
 	/**
-	 * @param string $page
+	 * @param LinkTarget $source
 	 * @return string
 	 */
-	public function getHTML( string $page ) : string {
-		if ( !isset( $this->icons[$page] ) ) {
+	public function getHTML( LinkTarget $source ) : string {
+		$key = self::getKeyForPage( $source );
+		if ( !isset( $this->icons[$key] ) ) {
 			return '';
 		}
-		$icons = $this->icons[$page];
+		$icons = $this->icons[$key];
 		$iconhtml = '';
 		foreach ( $icons as $icon ) {
 			switch ( $icon->getType() ) {
@@ -252,11 +264,11 @@ class IconManager {
 	}
 
 	/**
-	 * @param Title $title
+	 * @param LinkTarget $linkTarget
 	 */
-	private function queryHideTitleIcon( Title $title ) : void {
+	private function queryHideTitleIcon( LinkTarget $linkTarget ) : void {
 		$result = $this->smwInterface->getPropertyValues(
-			$title,
+			$linkTarget,
 			$this->config->get( 'TitleIcon_HideTitleIconPropertyName' )
 		);
 		if ( isset( $result[0] ) ) {
@@ -273,8 +285,6 @@ class IconManager {
 		$filetitle = Title::newFromText( $filename, NS_FILE );
 		$imagefile = $this->repoGroup->findFile( $filetitle );
 
-		$title = Title::newFromText( $icon->getPage() );
-
 		if ( $imagefile === false ) {
 			return '';
 		}
@@ -285,20 +295,16 @@ class IconManager {
 				$tooltip = substr( $tooltip, 0, strpos( $tooltip, '.' ) );
 			}
 		} else {
-			$tooltip = $title;
+			$tooltip = $icon->getSource();
 		}
 
-		if ( $icon->getLink() ) {
-			$linkTitle = Title::newFromText( $icon->getLink() );
-			if ( !$linkTitle ) {
-				$linkTitle = $title;
-			}
-		} else {
-			$linkTitle = $title;
+		$linkTarget = $icon->getLink();
+		if ( !$linkTarget ) {
+			$linkTarget = $icon->getSource();
 		}
 
 		$frameParams = [
-			'link-title' => $linkTitle,
+			'link-title' => $linkTarget,
 			'alt' => $tooltip,
 			'title' => $tooltip
 		];
@@ -322,19 +328,15 @@ class IconManager {
 	 * @return string
 	 */
 	private function getOOUIIconHTML( Icon $icon ) : string {
-		if ( $icon->getLink() ) {
-			$linkTitle = Title::newFromText( $icon->getLink() );
-		} else {
-			$linkTitle = Title::newFromText( $icon->getPage() );
-		}
+		$linkTitle = $icon->getLink();
 		if ( !$linkTitle ) {
-			return '';
+			$linkTitle = $icon->getSource();
 		}
 		$url = 'resources/lib/ooui/themes/wikimediaui/images/icons/' . $icon->getIcon();
 		return $this->linkRenderer->makeLink(
-				$linkTitle,
-				new HtmlArmor( Linker::makeExternalImage( $url ) )
-			) . "&nbsp;";
+			$linkTitle,
+			new HtmlArmor( Linker::makeExternalImage( $url ) )
+		) . "&nbsp;";
 	}
 
 	/**
@@ -342,14 +344,21 @@ class IconManager {
 	 * @return string
 	 */
 	private function getUnicodeIconHTML( Icon $icon ) : string {
-		if ( $icon->getLink() ) {
-			$linkTitle = Title::newFromText( $icon->getLink() );
-		} else {
-			$linkTitle = Title::newFromText( $icon->getPage() );
-		}
+		$linkTitle = $icon->getLink();
 		if ( !$linkTitle ) {
-			return '';
+			$linkTitle = $icon->getSource();
 		}
-		return $this->linkRenderer->makeLink( $linkTitle, new HtmlArmor( $icon->getIcon() ) ) . "&nbsp;";
+		return $this->linkRenderer->makeLink(
+			$linkTitle,
+			new HtmlArmor( $icon->getIcon() )
+		) . "&nbsp;";
+	}
+
+	/**
+	 * @param LinkTarget $linkTarget
+	 * @return string
+	 */
+	public static function getKeyForPage( LinkTarget $linkTarget ) : string {
+		return 'ns' . $linkTarget->getNamespace() . ':' . $linkTarget->getDBkey();
 	}
 }
