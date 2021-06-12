@@ -34,6 +34,7 @@ use Parser;
 use PHPUnit\Framework\MockObject\MockObject;
 use RepoGroup;
 use Title;
+use TitleParser;
 
 class IconManagerTest extends MediaWikiUnitTestCase {
 
@@ -46,7 +47,7 @@ class IconManagerTest extends MediaWikiUnitTestCase {
 					// category, page, all, or empty
 					return $hide;
 				}
-				return $icons[$page];
+				return $icons[IconManager::getKeyForPage( $page )];
 			} );
 		return $smwInterface;
 	}
@@ -63,6 +64,7 @@ class IconManagerTest extends MediaWikiUnitTestCase {
 		return new IconManager(
 			$config,
 			$this->createMock( Parser::class ),
+			$this->createMock( TitleParser::class ),
 			$this->createMock( PageProps::class ),
 			$this->createMock( RepoGroup::class ),
 			$this->createMock( LinkRenderer::class ),
@@ -73,66 +75,72 @@ class IconManagerTest extends MediaWikiUnitTestCase {
 
 	public function provideGetIcons() {
 		/** @var Title|MockObject $title */
-		$title = $this->createMock( Title::class );
-		$title->method( 'getPrefixedText' )->willReturn( 'TestPage' );
-		$category = $this->createMock( Title::class );
-		$category->method( 'getPrefixedText' )->willReturn( 'Category:TestCategory' );
+		$title = $this->createNoOpMock( Title::class, [ 'getNamespace', 'getDBkey', 'getArticleID', '__sleep' ] );
+		$title->method( 'getNamespace' )->willReturn( 0 );
+		$title->method( 'getDBkey' )->willReturn( 'TestPage' );
+		$title->method( 'getArticleID' )->willReturn( 1 );
+		$title->method( '__sleep' )->willReturn( [] );
+		$category = $this->createNoOpMock( Title::class, [ 'getNamespace', 'getDBkey', 'getArticleID', '__sleep' ] );
+		$category->method( 'getNamespace' )->willReturn( 14 );
+		$category->method( 'getDBkey' )->willReturn( 'TestCategory' );
+		$category->method( 'getArticleID' )->willReturn( 2 );
+		$category->method( '__sleep' )->willReturn( [] );
 
 		yield [
 			$title,
 			[ $category ],
 			[
-				'TestPage' => [ 'Icon.png' ],
-				'Category:TestCategory' => []
+				'ns0:TestPage' => [ 'Icon.png' ],
+				'ns14:TestCategory' => []
 			],
 			[],
 			[
-				new Icon( 'TestPage', 'Icon.png', Icon::ICON_TYPE_FILE )
+				new Icon( $title, 'Icon.png', Icon::ICON_TYPE_FILE )
 			]
 		];
 		yield [
 			$title,
 			[ $category ],
 			[
-				'TestPage' => [ 'Icon1.png' ],
-				'Category:TestCategory' => [ 'Icon2.png' ]
+				'ns0:TestPage' => [ 'Icon1.png' ],
+				'ns14:TestCategory' => [ 'Icon2.png' ]
 			],
 			[],
 			[
-				new Icon( 'TestPage', 'Icon1.png', Icon::ICON_TYPE_FILE ),
-				new Icon( 'Category:TestCategory', 'Icon2.png', Icon::ICON_TYPE_FILE )
+				new Icon( $title, 'Icon1.png', Icon::ICON_TYPE_FILE ),
+				new Icon( $category, 'Icon2.png', Icon::ICON_TYPE_FILE )
 			]
 		];
 		yield [
 			$title,
 			[ $category ],
 			[
-				'TestPage' => [ 'Icon1.png' ],
-				'Category:TestCategory' => [ 'Icon2.png' ]
+				'ns0:TestPage' => [ 'Icon1.png' ],
+				'ns14:TestCategory' => [ 'Icon2.png' ]
 			],
 			[ 'category' ],
 			[
-				new Icon( 'TestPage', 'Icon1.png', Icon::ICON_TYPE_FILE )
+				new Icon( $title, 'Icon1.png', Icon::ICON_TYPE_FILE )
 			]
 		];
 		yield [
 			$title,
 			[ $category ],
 			[
-				'TestPage' => [ 'Icon1.png' ],
-				'Category:TestCategory' => [ 'Icon2.png' ]
+				'ns0:TestPage' => [ 'Icon1.png' ],
+				'ns14:TestCategory' => [ 'Icon2.png' ]
 			],
 			[ 'page' ],
 			[
-				new Icon( 'Category:TestCategory', 'Icon2.png', Icon::ICON_TYPE_FILE )
+				new Icon( $category, 'Icon2.png', Icon::ICON_TYPE_FILE )
 			]
 		];
 		yield [
 			$title,
 			[ $category ],
 			[
-				'TestPage' => [ 'Icon1.png' ],
-				'Category:TestCategory' => [ 'Icon2.png' ]
+				'ns0:TestPage' => [ 'Icon1.png' ],
+				'ns14:TestCategory' => [ 'Icon2.png' ]
 			],
 			[ 'all' ],
 			[]
@@ -141,13 +149,13 @@ class IconManagerTest extends MediaWikiUnitTestCase {
 			$title,
 			[ $category ],
 			[
-				'TestPage' => [ 'Icon1.png' ],
-				'Category:TestCategory' => [ 'Icon2.png' ]
+				'ns0:TestPage' => [ 'Icon1.png' ],
+				'ns14:TestCategory' => [ 'Icon2.png' ]
 			],
 			[ 'bogus' ],
 			[
-				new Icon( 'TestPage', 'Icon1.png', Icon::ICON_TYPE_FILE ),
-				new Icon( 'Category:TestCategory', 'Icon2.png', Icon::ICON_TYPE_FILE )
+				new Icon( $title, 'Icon1.png', Icon::ICON_TYPE_FILE ),
+				new Icon( $category, 'Icon2.png', Icon::ICON_TYPE_FILE )
 			]
 		];
 	}
@@ -166,7 +174,7 @@ class IconManagerTest extends MediaWikiUnitTestCase {
 		$smwInterface = $this->getSMWInterface( $smwIcons, $hide );
 		$manager = $this->getManager( $title, $smwInterface );
 
-		$icons = $manager->getIcons( $title, $categories, false );
+		$icons = $manager->getIcons( $title, $categories );
 
 		$this->assertArrayEquals(
 			$icons,

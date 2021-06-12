@@ -22,9 +22,12 @@
 
 namespace MediaWiki\Extension\TitleIcon;
 
+use InvalidArgumentException;
 use MediaWiki\Json\JsonUnserializable;
 use MediaWiki\Json\JsonUnserializableTrait;
 use MediaWiki\Json\JsonUnserializer;
+use MediaWiki\Linker\LinkTarget;
+use Title;
 
 class Icon implements JsonUnserializable {
 	use JsonUnserializableTrait;
@@ -35,8 +38,8 @@ class Icon implements JsonUnserializable {
 
 	public const ICON_PROPERTY_NAME = 'titleicons';
 
-	/** @var string */
-	private $page;
+	/** @var LinkTarget */
+	private $source;
 
 	/** @var string */
 	private $icon;
@@ -44,27 +47,27 @@ class Icon implements JsonUnserializable {
 	/** @var string */
 	private $type;
 
-	/** @var string|null */
+	/** @var LinkTarget|null */
 	private $link;
 
 	/**
-	 * @param string $page
+	 * @param LinkTarget $source
 	 * @param string $icon
 	 * @param string $type
-	 * @param string|null $link
+	 * @param LinkTarget|null $link
 	 */
-	public function __construct( string $page, string $icon, string $type, ?string $link = null ) {
-		$this->page = $page;
+	public function __construct( LinkTarget $source, string $icon, string $type, ?LinkTarget $link = null ) {
+		$this->source = $source;
 		$this->icon = $icon;
 		$this->type = $type;
 		$this->link = $link;
 	}
 
 	/**
-	 * @return string
+	 * @return LinkTarget
 	 */
-	public function getPage() : string {
-		return $this->page;
+	public function getSource() : LinkTarget {
+		return $this->source;
 	}
 
 	/**
@@ -82,9 +85,9 @@ class Icon implements JsonUnserializable {
 	}
 
 	/**
-	 * @return string|null
+	 * @return LinkTarget|null
 	 */
-	public function getLink() : ?string {
+	public function getLink() : ?LinkTarget {
 		return $this->link;
 	}
 
@@ -109,11 +112,23 @@ class Icon implements JsonUnserializable {
 	 * @return Icon
 	 */
 	public static function newFromJsonArray( JsonUnserializer $unserializer, array $json ) {
+		if ( !isset( $json['source-dbkey'] )
+			|| !isset( $json['source-namespace'] )
+			|| !isset( $json['icon'] )
+			|| !isset( $json['type'] )
+			) {
+			throw new InvalidArgumentException( "Missing Icon field(s)" );
+		}
+		if ( isset( $json['link-dbkey'] ) && isset( $json['link-namespace'] ) ) {
+			$link = Title::newFromText( $json['link-dbkey'], $json['link-namespace'] );
+		} else {
+			$link = null;
+		}
 		return new Icon(
-			$json['page'],
+			Title::newFromText( $json['source-dbkey'], $json['source-namespace'] ),
 			$json['icon'],
 			$json['type'],
-			$json['link']
+			$link
 		);
 	}
 
@@ -121,11 +136,16 @@ class Icon implements JsonUnserializable {
 	 * @return array
 	 */
 	protected function toJsonArray(): array {
-		return [
-			'page' => $this->page,
+		$result = [
+			'source-dbkey' => $this->source->getDBkey(),
+			'source-namespace' => $this->source->getNamespace(),
 			'icon' => $this->icon,
-			'type' => $this->type,
-			'link' => $this->link
-		];
+			'type' => $this->type
+			];
+		if ( $this->link ) {
+			$result['link-dbkey'] = $this->link->getDBkey();
+			$result['link-namespace'] = $this->link->getNamespace();
+		}
+		return $result;
 	}
 }

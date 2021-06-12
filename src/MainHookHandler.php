@@ -22,7 +22,6 @@
 
 namespace MediaWiki\Extension\TitleIcon;
 
-use Action;
 use Config;
 use HtmlArmor;
 use MediaWiki\Hook\BeforePageDisplayHook;
@@ -69,12 +68,15 @@ class MainHookHandler implements BeforePageDisplayHook, ShowSearchHitTitleHook {
 		}
 
 		$title = $skin->getTitle();
+		if ( $title->isSpecialPage() ) {
+			return;
+		}
+
 		$this->iconManager->getIcons(
 			$title,
-			$this->iconManager->getCategories( $title ),
-			Action::getActionName( $skin->getContext() ) !== 'view'
+			$this->iconManager->getCategories( $title )
 		);
-		$html = $this->iconManager->getHTML( $title->getPrefixedText() );
+		$html = $this->iconManager->getHTML( $title );
 		if ( strlen( $html ) > 0 ) {
 			$out->addJsConfigVars( 'TitleIconHTML', $html );
 			$out->addJsConfigVars( 'TitleIconSelector', $this->config->get( 'TitleIcon_CSSSelector' ) );
@@ -101,10 +103,9 @@ class MainHookHandler implements BeforePageDisplayHook, ShowSearchHitTitleHook {
 
 		$this->iconManager->getIcons(
 			$title,
-			$this->iconManager->getCategories( $title ),
-			true
+			$this->iconManager->getCategories( $title )
 		);
-		$html = $this->iconManager->getHTML( $title->getPrefixedText() );
+		$html = $this->iconManager->getHTML( $title );
 		if ( strlen( $html ) > 0 ) {
 			$titleSnippet = new HtmlArmor( $html . $this->linkRenderer->makeLink( $title ) );
 		}

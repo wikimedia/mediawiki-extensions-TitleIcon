@@ -23,11 +23,11 @@
 namespace MediaWiki\Extension\TitleIcon;
 
 use ExtensionRegistry;
+use MediaWiki\Linker\LinkTarget;
 use SMW\DIProperty;
 use SMW\DIWikiPage;
 use SMW\StoreFactory;
 use SMWDataItem;
-use Title;
 
 class SMWInterface {
 	/** @var bool */
@@ -50,20 +50,18 @@ class SMWInterface {
 	}
 
 	/**
-	 * @param string $page
+	 * @param LinkTarget $linkTarget
 	 * @param string $propertyName
 	 * @return string[]
 	 */
-	public function getPropertyValues( string $page, string $propertyName ) : array {
+	public function getPropertyValues( LinkTarget $linkTarget, string $propertyName ) : array {
 		if ( !$this->isLoaded ) {
 			return [];
 		}
 
 		$store = StoreFactory::getStore();
 
-		$title = Title::newFromText( $page );
-
-		$subject = DIWikiPage::newFromTitle( $title );
+		$subject = DIWikiPage::newFromText( $linkTarget->getDBkey(), $linkTarget->getNamespace() );
 		$data = $store->getSemanticData( $subject );
 		$property = DIProperty::newFromUserLabel( $propertyName );
 		$values = $data->getPropertyValues( $property );
