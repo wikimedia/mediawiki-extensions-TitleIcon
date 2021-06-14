@@ -23,6 +23,7 @@
 namespace MediaWiki\Extension\TitleIcon\Test;
 
 use Config;
+use Language;
 use MediaWiki\Extension\TitleIcon\Icon;
 use MediaWiki\Extension\TitleIcon\IconManager;
 use MediaWiki\Extension\TitleIcon\SMWInterface;
@@ -37,6 +38,42 @@ use Title;
 use TitleParser;
 
 class IconManagerTest extends MediaWikiUnitTestCase {
+
+	/**
+	 * @var Title
+	 */
+	private $title;
+
+	/**
+	 * @var Title
+	 */
+	private $category;
+
+	/**
+	 * @var Title
+	 */
+	private $namespace;
+
+	protected function setUp() : void {
+		$this->title = $this->createNoOpMock( Title::class,
+			[ 'getNamespace', 'getDBkey', 'getArticleID', '__sleep' ] );
+		$this->title->method( 'getNamespace' )->willReturn( 0 );
+		$this->title->method( 'getDBkey' )->willReturn( 'TestPage' );
+		$this->title->method( 'getArticleID' )->willReturn( 1 );
+		$this->title->method( '__sleep' )->willReturn( [] );
+		$this->category = $this->createNoOpMock( Title::class,
+			[ 'getNamespace', 'getDBkey', 'getArticleID', '__sleep' ] );
+		$this->category->method( 'getNamespace' )->willReturn( 14 );
+		$this->category->method( 'getDBkey' )->willReturn( 'TestCategory' );
+		$this->category->method( 'getArticleID' )->willReturn( 3 );
+		$this->category->method( '__sleep' )->willReturn( [] );
+		$this->namespace = $this->createNoOpMock( Title::class,
+			[ 'getNamespace', 'getDBkey', 'getArticleID', '__sleep' ] );
+		$this->namespace->method( 'getNamespace' )->willReturn( 4 );
+		$this->namespace->method( 'getDBkey' )->willReturn( '(Main)' );
+		$this->namespace->method( 'getArticleID' )->willReturn( 2 );
+		$this->namespace->method( '__sleep' )->willReturn( [] );
+	}
 
 	private function getSMWInterface( array $icons = [], array $hide = [] ) : SMWInterface {
 		/** @var SMWInterface|MockObject $smwInterface */
@@ -53,7 +90,7 @@ class IconManagerTest extends MediaWikiUnitTestCase {
 	}
 
 	private function getManager( Title $title, SMWInterface $smwInterface ) : IconManager {
-		$config = $this->createMock( Config::class );
+		$config = $this->createNoOpMock( Config::class, [ 'get' ] );
 		$config->method( 'get' )->willReturnCallback( static function ( $name ) {
 			if ( $name === 'TitleIcon_HideTitleIconPropertyName' ) {
 				return 'Hide Title Icon';
@@ -61,10 +98,24 @@ class IconManagerTest extends MediaWikiUnitTestCase {
 			return 'Title Icon';
 		} );
 
+		$titleParser = $this->createNoOpMock( TitleParser::class, [ 'parseTitle' ] );
+		$self = $this;
+		$titleParser->method( 'parseTitle' )->willReturnCallback( static function ( $text, $ns ) use ( $self ) {
+			switch ( $ns ) {
+				case 0:
+					return $self->title;
+				case 4:
+					return $self->namespace;
+				case 14:
+					return $self->category;
+			}
+		} );
+
 		return new IconManager(
 			$config,
 			$this->createMock( Parser::class ),
-			$this->createMock( TitleParser::class ),
+			$titleParser,
+			$this->createMock( Language::class ),
 			$this->createMock( PageProps::class ),
 			$this->createMock( RepoGroup::class ),
 			$this->createMock( LinkRenderer::class ),
@@ -74,88 +125,98 @@ class IconManagerTest extends MediaWikiUnitTestCase {
 	}
 
 	public function provideGetIcons() {
-		/** @var Title|MockObject $title */
-		$title = $this->createNoOpMock( Title::class, [ 'getNamespace', 'getDBkey', 'getArticleID', '__sleep' ] );
-		$title->method( 'getNamespace' )->willReturn( 0 );
-		$title->method( 'getDBkey' )->willReturn( 'TestPage' );
-		$title->method( 'getArticleID' )->willReturn( 1 );
-		$title->method( '__sleep' )->willReturn( [] );
-		$category = $this->createNoOpMock( Title::class, [ 'getNamespace', 'getDBkey', 'getArticleID', '__sleep' ] );
-		$category->method( 'getNamespace' )->willReturn( 14 );
-		$category->method( 'getDBkey' )->willReturn( 'TestCategory' );
-		$category->method( 'getArticleID' )->willReturn( 2 );
-		$category->method( '__sleep' )->willReturn( [] );
-
+		$this->setUp();
 		yield [
-			$title,
-			[ $category ],
+			$this->title,
+			[ $this->category ],
 			[
 				'ns0:TestPage' => [ 'Icon.png' ],
-				'ns14:TestCategory' => []
+				'ns14:TestCategory' => [],
+				'ns4:(Main)' => []
 			],
 			[],
 			[
-				new Icon( $title, 'Icon.png', Icon::ICON_TYPE_FILE )
+				new Icon( $this->title, 'Icon.png', Icon::ICON_TYPE_FILE )
 			]
 		];
 		yield [
-			$title,
-			[ $category ],
+			$this->title,
+			[ $this->category ],
 			[
 				'ns0:TestPage' => [ 'Icon1.png' ],
-				'ns14:TestCategory' => [ 'Icon2.png' ]
+				'ns14:TestCategory' => [ 'Icon2.png' ],
+				'ns4:(Main)' => []
 			],
 			[],
 			[
-				new Icon( $title, 'Icon1.png', Icon::ICON_TYPE_FILE ),
-				new Icon( $category, 'Icon2.png', Icon::ICON_TYPE_FILE )
+				new Icon( $this->title, 'Icon1.png', Icon::ICON_TYPE_FILE ),
+				new Icon( $this->category, 'Icon2.png', Icon::ICON_TYPE_FILE )
 			]
 		];
 		yield [
-			$title,
-			[ $category ],
+			$this->title,
+			[ $this->category ],
 			[
 				'ns0:TestPage' => [ 'Icon1.png' ],
-				'ns14:TestCategory' => [ 'Icon2.png' ]
+				'ns14:TestCategory' => [ 'Icon2.png' ],
+				'ns4:(Main)' => [ 'Icon3.png' ]
+			],
+			[],
+			[
+				new Icon( $this->title, 'Icon1.png', Icon::ICON_TYPE_FILE ),
+				new Icon( $this->namespace, 'Icon2.png', Icon::ICON_TYPE_FILE ),
+				new Icon( $this->category, 'Icon3.png', Icon::ICON_TYPE_FILE )
+			]
+		];
+		yield [
+			$this->title,
+			[ $this->category ],
+			[
+				'ns0:TestPage' => [ 'Icon1.png' ],
+				'ns14:TestCategory' => [ 'Icon2.png' ],
+				'ns4:(Main)' => []
 			],
 			[ 'category' ],
 			[
-				new Icon( $title, 'Icon1.png', Icon::ICON_TYPE_FILE )
+				new Icon( $this->title, 'Icon1.png', Icon::ICON_TYPE_FILE )
 			]
 		];
 		yield [
-			$title,
-			[ $category ],
+			$this->title,
+			[ $this->category ],
 			[
 				'ns0:TestPage' => [ 'Icon1.png' ],
-				'ns14:TestCategory' => [ 'Icon2.png' ]
+				'ns14:TestCategory' => [ 'Icon2.png' ],
+				'ns4:(Main)' => []
 			],
 			[ 'page' ],
 			[
-				new Icon( $category, 'Icon2.png', Icon::ICON_TYPE_FILE )
+				new Icon( $this->category, 'Icon2.png', Icon::ICON_TYPE_FILE )
 			]
 		];
 		yield [
-			$title,
-			[ $category ],
+			$this->title,
+			[ $this->category ],
 			[
 				'ns0:TestPage' => [ 'Icon1.png' ],
-				'ns14:TestCategory' => [ 'Icon2.png' ]
+				'ns14:TestCategory' => [ 'Icon2.png' ],
+				'ns4:(Main)' => []
 			],
 			[ 'all' ],
 			[]
 		];
 		yield [
-			$title,
-			[ $category ],
+			$this->title,
+			[ $this->category ],
 			[
 				'ns0:TestPage' => [ 'Icon1.png' ],
-				'ns14:TestCategory' => [ 'Icon2.png' ]
+				'ns14:TestCategory' => [ 'Icon2.png' ],
+				'ns4:(Main)' => []
 			],
 			[ 'bogus' ],
 			[
-				new Icon( $title, 'Icon1.png', Icon::ICON_TYPE_FILE ),
-				new Icon( $category, 'Icon2.png', Icon::ICON_TYPE_FILE )
+				new Icon( $this->title, 'Icon1.png', Icon::ICON_TYPE_FILE ),
+				new Icon( $this->category, 'Icon2.png', Icon::ICON_TYPE_FILE )
 			]
 		];
 	}
@@ -181,5 +242,4 @@ class IconManagerTest extends MediaWikiUnitTestCase {
 			$expected
 		);
 	}
-
 }
