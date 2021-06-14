@@ -26,10 +26,12 @@ namespace MediaWiki\Extension\TitleIcon;
 
 use Config;
 use HtmlArmor;
+use Language;
 use Linker;
 use MediaWiki\Json\JsonCodec;
 use MediaWiki\Linker\LinkRenderer;
 use MediaWiki\Linker\LinkTarget;
+use Message;
 use PageProps;
 use Parser;
 use RepoGroup;
@@ -45,6 +47,9 @@ class IconManager {
 
 	/** @var TitleParser */
 	private $titleParser;
+
+	/** @var Language */
+	private $contentLanguage;
 
 	/** @var PageProps */
 	private $pageProps;
@@ -70,10 +75,14 @@ class IconManager {
 	/** @var bool */
 	private $hideCategoryIcons = false;
 
+	/** @var bool */
+	private $hideNamespaceIcons = false;
+
 	/**
 	 * @param Config $config
 	 * @param Parser $parser
 	 * @param TitleParser $titleParser
+	 * @param Language $contentLangauge
 	 * @param PageProps $pageProps
 	 * @param RepoGroup $repoGroup
 	 * @param LinkRenderer $linkRenderer
@@ -84,6 +93,7 @@ class IconManager {
 		Config $config,
 		Parser $parser,
 		TitleParser $titleParser,
+		Language $contentLangauge,
 		PageProps $pageProps,
 		RepoGroup $repoGroup,
 		LinkRenderer $linkRenderer,
@@ -93,6 +103,7 @@ class IconManager {
 		$this->config = $config;
 		$this->parser = $parser;
 		$this->titleParser = $titleParser;
+		$this->contentLanguage = $contentLangauge;
 		$this->pageProps = $pageProps;
 		$this->repoGroup = $repoGroup;
 		$this->linkRenderer = $linkRenderer;
@@ -133,6 +144,8 @@ class IconManager {
 		if ( !$this->hidePageIcons ) {
 			$queryTargets[] = $linkTarget;
 			$this->queryPagePropsIcons( $linkTarget );
+		} else {
+			$this->icons[$key] = [];
 		}
 
 		if ( !$this->hideCategoryIcons ) {
@@ -144,6 +157,22 @@ class IconManager {
 					foreach ( $this->icons[$categoryKey] as $icon ) {
 						$this->addIcon( $linkTarget, $icon );
 					}
+				}
+			}
+		}
+
+		if ( !$this->hideNamespaceIcons ) {
+			$namespaceText = $this->contentLanguage->getNsText( $linkTarget->getNamespace() );
+			if ( $namespaceText === '' ) {
+				$namespaceText = Message::newFromKey( 'Blanknamespace' )->plain();
+			}
+			$namespacePage = $this->titleParser->parseTitle( $namespaceText, NS_PROJECT );
+			$queryTargets[] = $namespacePage;
+			$this->queryPagePropsIcons( $namespacePage );
+			$namespaceKey = self::getKeyForPage( $namespacePage );
+			if ( isset( $this->icons[$namespaceKey] ) ) {
+				foreach ( $this->icons[$namespaceKey] as $icon ) {
+					$this->addIcon( $linkTarget, $icon );
 				}
 			}
 		}
@@ -257,9 +286,13 @@ class IconManager {
 			case 'category':
 				$this->hideCategoryIcons = true;
 				break;
+			case 'namespace':
+				$this->hideNamespaceIcons = true;
+				break;
 			case 'all':
 				$this->hidePageIcons = true;
 				$this->hideCategoryIcons = true;
+				$this->hideNamespaceIcons = true;
 		}
 	}
 
@@ -267,12 +300,12 @@ class IconManager {
 	 * @param LinkTarget $linkTarget
 	 */
 	private function queryHideTitleIcon( LinkTarget $linkTarget ) : void {
-		$result = $this->smwInterface->getPropertyValues(
+		$results = $this->smwInterface->getPropertyValues(
 			$linkTarget,
 			$this->config->get( 'TitleIcon_HideTitleIconPropertyName' )
 		);
-		if ( isset( $result[0] ) ) {
-			$this->hideTitleIcon( $result[0] );
+		foreach ( $results as $result ) {
+			$this->hideTitleIcon( $result );
 		}
 	}
 

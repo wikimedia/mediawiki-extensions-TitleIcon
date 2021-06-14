@@ -52,10 +52,10 @@ class InitHookHandler implements ParserFirstCallInitHook {
 
 	/**
 	 * @param Parser $parser
-	 * @param string|null $flag 'page', 'category', or 'all'
+	 * @param string|null $flag 'page', 'category', 'namespace', or 'all'
 	 */
 	public static function hideTitleIcon( Parser $parser, ?string $flag = null ) {
-		MediaWikiServices::getInstance()->getService( "IconManager" )->hideTitleIcon( $flag );
+		MediaWikiServices::getInstance()->getService( "TitleIcon:IconManager" )->hideTitleIcon( $flag );
 	}
 
 	/**
