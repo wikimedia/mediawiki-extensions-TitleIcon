@@ -33,6 +33,7 @@ return [
 			$services->getMainConfig(),
 			$services->getParser(),
 			$services->getTitleParser(),
+			$services->getContentLanguage(),
 			$services->get( 'TitleIcon:PageProps' ),
 			$services->getRepoGroup(),
 			$services->getLinkRenderer(),
