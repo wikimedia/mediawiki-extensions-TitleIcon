@@ -116,7 +116,7 @@ class IconManager {
 	 * @param LinkTarget $linkTarget
 	 * @return LinkTarget[]
 	 */
-	public function getCategories( LinkTarget $linkTarget ) : array {
+	private function getCategories( LinkTarget $linkTarget ) : array {
 		$result = [];
 		$categories = Title::newFromLinkTarget( $linkTarget )->getParentCategories();
 		foreach ( $categories as $category => $page ) {
@@ -127,10 +127,9 @@ class IconManager {
 
 	/**
 	 * @param LinkTarget $linkTarget
-	 * @param LinkTarget[] $categories
 	 * @return Icon[]
 	 */
-	public function getIcons( LinkTarget $linkTarget, array $categories ) : array {
+	public function getIcons( LinkTarget $linkTarget ) : array {
 		$key = self::getKeyForPage( $linkTarget );
 		if ( !isset( $this->icons[$key] ) ) {
 			$this->icons[$key] = [];
@@ -149,6 +148,7 @@ class IconManager {
 		}
 
 		if ( !$this->hideCategoryIcons ) {
+			$categories = $this->getCategories( $linkTarget );
 			foreach ( $categories as $category ) {
 				$queryTargets[] = $category;
 				$this->queryPagePropsIcons( $category );
@@ -236,7 +236,7 @@ class IconManager {
 	 * @param LinkTarget $source
 	 * @param Icon $icon
 	 */
-	public function addIcon( LinkTarget $source, Icon $icon ) : void {
+	private function addIcon( LinkTarget $source, Icon $icon ) : void {
 		$key = self::getKeyForPage( $source );
 		if ( !isset( $this->icons[$key] ) ) {
 			$this->icons[$key] = [];
