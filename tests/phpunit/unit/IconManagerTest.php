@@ -55,24 +55,30 @@ class IconManagerTest extends MediaWikiUnitTestCase {
 	private $namespace;
 
 	protected function setUp() : void {
-		$this->title = $this->createNoOpMock( Title::class,
+		$category = $this->createNoOpMock( Title::class,
 			[ 'getNamespace', 'getDBkey', 'getArticleID', '__sleep' ] );
-		$this->title->method( 'getNamespace' )->willReturn( 0 );
-		$this->title->method( 'getDBkey' )->willReturn( 'TestPage' );
-		$this->title->method( 'getArticleID' )->willReturn( 1 );
-		$this->title->method( '__sleep' )->willReturn( [] );
-		$this->category = $this->createNoOpMock( Title::class,
+		$category->method( 'getNamespace' )->willReturn( 14 );
+		$category->method( 'getDBkey' )->willReturn( 'TestCategory' );
+		$category->method( 'getArticleID' )->willReturn( 3 );
+		$category->method( '__sleep' )->willReturn( [] );
+		$this->category = $category;
+		$title = $this->createNoOpMock( Title::class,
+			[ 'getNamespace', 'getDBkey', 'getArticleID', '__sleep', 'getParentCategories' ] );
+		$title->method( 'getNamespace' )->willReturn( 0 );
+		$title->method( 'getDBkey' )->willReturn( 'TestPage' );
+		$title->method( 'getArticleID' )->willReturn( 1 );
+		$title->method( '__sleep' )->willReturn( [] );
+		$title->method( 'getParentCategories' )->willReturnCallback( static function () use ( $category ) {
+			return [ 'Category:TestCategory' => $category ];
+		} );
+		$this->title = $title;
+		$namespace = $this->createNoOpMock( Title::class,
 			[ 'getNamespace', 'getDBkey', 'getArticleID', '__sleep' ] );
-		$this->category->method( 'getNamespace' )->willReturn( 14 );
-		$this->category->method( 'getDBkey' )->willReturn( 'TestCategory' );
-		$this->category->method( 'getArticleID' )->willReturn( 3 );
-		$this->category->method( '__sleep' )->willReturn( [] );
-		$this->namespace = $this->createNoOpMock( Title::class,
-			[ 'getNamespace', 'getDBkey', 'getArticleID', '__sleep' ] );
-		$this->namespace->method( 'getNamespace' )->willReturn( 4 );
-		$this->namespace->method( 'getDBkey' )->willReturn( '(Main)' );
-		$this->namespace->method( 'getArticleID' )->willReturn( 2 );
-		$this->namespace->method( '__sleep' )->willReturn( [] );
+		$namespace->method( 'getNamespace' )->willReturn( 4 );
+		$namespace->method( 'getDBkey' )->willReturn( '(Main)' );
+		$namespace->method( 'getArticleID' )->willReturn( 2 );
+		$namespace->method( '__sleep' )->willReturn( [] );
+		$this->namespace = $namespace;
 	}
 
 	private function getSMWInterface( array $icons = [], array $hide = [] ) : SMWInterface {
@@ -89,7 +95,7 @@ class IconManagerTest extends MediaWikiUnitTestCase {
 		return $smwInterface;
 	}
 
-	private function getManager( Title $title, SMWInterface $smwInterface ) : IconManager {
+	private function getManager( SMWInterface $smwInterface ) : IconManager {
 		$config = $this->createNoOpMock( Config::class, [ 'get' ] );
 		$config->method( 'get' )->willReturnCallback( static function ( $name ) {
 			if ( $name === 'TitleIcon_HideTitleIconPropertyName' ) {
@@ -100,14 +106,11 @@ class IconManagerTest extends MediaWikiUnitTestCase {
 
 		$titleParser = $this->createNoOpMock( TitleParser::class, [ 'parseTitle' ] );
 		$self = $this;
-		$titleParser->method( 'parseTitle' )->willReturnCallback( static function ( $text, $ns ) use ( $self ) {
-			switch ( $ns ) {
-				case 0:
-					return $self->title;
-				case 4:
-					return $self->namespace;
-				case 14:
-					return $self->category;
+		$titleParser->method( 'parseTitle' )->willReturnCallback( static function ( $text ) use ( $self ) {
+			if ( $text === 'Category:TestCategory' ) {
+				return $self->category;
+			} else {
+				return $self->namespace;
 			}
 		} );
 
@@ -127,8 +130,6 @@ class IconManagerTest extends MediaWikiUnitTestCase {
 	public function provideGetIcons() {
 		$this->setUp();
 		yield [
-			$this->title,
-			[ $this->category ],
 			[
 				'ns0:TestPage' => [ 'Icon.png' ],
 				'ns14:TestCategory' => [],
@@ -140,8 +141,6 @@ class IconManagerTest extends MediaWikiUnitTestCase {
 			]
 		];
 		yield [
-			$this->title,
-			[ $this->category ],
 			[
 				'ns0:TestPage' => [ 'Icon1.png' ],
 				'ns14:TestCategory' => [ 'Icon2.png' ],
@@ -154,8 +153,6 @@ class IconManagerTest extends MediaWikiUnitTestCase {
 			]
 		];
 		yield [
-			$this->title,
-			[ $this->category ],
 			[
 				'ns0:TestPage' => [ 'Icon1.png' ],
 				'ns14:TestCategory' => [ 'Icon2.png' ],
@@ -169,8 +166,6 @@ class IconManagerTest extends MediaWikiUnitTestCase {
 			]
 		];
 		yield [
-			$this->title,
-			[ $this->category ],
 			[
 				'ns0:TestPage' => [ 'Icon1.png' ],
 				'ns14:TestCategory' => [ 'Icon2.png' ],
@@ -182,8 +177,6 @@ class IconManagerTest extends MediaWikiUnitTestCase {
 			]
 		];
 		yield [
-			$this->title,
-			[ $this->category ],
 			[
 				'ns0:TestPage' => [ 'Icon1.png' ],
 				'ns14:TestCategory' => [ 'Icon2.png' ],
@@ -195,8 +188,6 @@ class IconManagerTest extends MediaWikiUnitTestCase {
 			]
 		];
 		yield [
-			$this->title,
-			[ $this->category ],
 			[
 				'ns0:TestPage' => [ 'Icon1.png' ],
 				'ns14:TestCategory' => [ 'Icon2.png' ],
@@ -206,8 +197,6 @@ class IconManagerTest extends MediaWikiUnitTestCase {
 			[]
 		];
 		yield [
-			$this->title,
-			[ $this->category ],
 			[
 				'ns0:TestPage' => [ 'Icon1.png' ],
 				'ns14:TestCategory' => [ 'Icon2.png' ],
@@ -226,16 +215,14 @@ class IconManagerTest extends MediaWikiUnitTestCase {
 	 * @dataProvider provideGetIcons
 	 */
 	public function testGetIcons(
-		Title $title,
-		array $categories,
 		array $smwIcons,
 		array $hide,
 		array $expected
 	) {
 		$smwInterface = $this->getSMWInterface( $smwIcons, $hide );
-		$manager = $this->getManager( $title, $smwInterface );
+		$manager = $this->getManager( $smwInterface );
 
-		$icons = $manager->getIcons( $title, $categories );
+		$icons = $manager->getIcons( $this->title );
 
 		$this->assertArrayEquals(
 			$icons,

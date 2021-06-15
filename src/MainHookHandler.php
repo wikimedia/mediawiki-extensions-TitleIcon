@@ -73,8 +73,7 @@ class MainHookHandler implements BeforePageDisplayHook, ShowSearchHitTitleHook {
 		}
 
 		$this->iconManager->getIcons(
-			$title,
-			$this->iconManager->getCategories( $title )
+			$title
 		);
 		$html = $this->iconManager->getHTML( $title );
 		if ( strlen( $html ) > 0 ) {
@@ -102,8 +101,7 @@ class MainHookHandler implements BeforePageDisplayHook, ShowSearchHitTitleHook {
 		}
 
 		$this->iconManager->getIcons(
-			$title,
-			$this->iconManager->getCategories( $title )
+			$title
 		);
 		$html = $this->iconManager->getHTML( $title );
 		if ( strlen( $html ) > 0 ) {
