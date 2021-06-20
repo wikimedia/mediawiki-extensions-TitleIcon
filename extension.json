@@ -1,6 +1,6 @@
 {
 	"name": "Title Icon",
-	"version": "5.0",
+	"version": "5.1",
 	"author": [
 		"[https://www.mediawiki.org/wiki/User:Cindy.cicalese Cindy Cicalese]"
 	],
@@ -38,6 +38,15 @@
 				"TitleIcon:IconManager",
 				"MainConfig",
 				"LinkRenderer"
+			]
+		}
+	},
+	"APIPropModules": {
+		"titleicons": {
+			"class": "MediaWiki\\Extension\\TitleIcon\\ApiQueryTitleIcons",
+			"services": [
+				"TitleIcon:IconManager",
+				"TitleIcon:JsonCodec"
 			]
 		}
 	},
