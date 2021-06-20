@@ -2,5 +2,8 @@
 	"@metadata": {
 		"authors": []
 	},
-	"titleicon-desc": "Displays icon in title on pages and in search results"
+	"titleicon-desc": "Displays icon in title on pages and in search results",
+	"apihelp-query+titleicons-description": "Returns JSON array of title icons of the given pages.",
+	"apihelp-query+titleicons-summary": "Returns title icons of the given pages.",
+	"apihelp-query+titleicons-example": "Get title icons of the main page"
 }
