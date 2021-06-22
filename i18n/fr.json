@@ -1,8 +1,12 @@
 {
 	"@metadata": {
 		"authors": [
+			"Gomoko",
 			"NemesisIII"
 		]
 	},
-	"titleicon-desc": "Affiche l'icône dans le titre des pages et dans les résultats de recherches"
+	"titleicon-desc": "Affiche l'icône dans le titre des pages et dans les résultats de recherches",
+	"apihelp-query+titleicons-description": "Renvoie un tableau JSON d’icônes de titre des pages fournies.",
+	"apihelp-query+titleicons-summary": "Renvoie les icônes de titre des pages fournies.",
+	"apihelp-query+titleicons-example": "Obtenir les icônes de titre de la page principale"
 }
