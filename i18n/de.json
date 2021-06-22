@@ -4,5 +4,8 @@
 			"Metalhead64"
 		]
 	},
-	"titleicon-desc": "Zeigt ein Symbol in Seitentiteln und Suchergebnissen an"
+	"titleicon-desc": "Zeigt ein Symbol in Seitentiteln und Suchergebnissen an",
+	"apihelp-query+titleicons-description": "Gibt ein JSON-Array mit den Titelsymbolen der angegebenen Seiten zurück.",
+	"apihelp-query+titleicons-summary": "Gibt die Titelsymbole der angegebenen Seiten zurück.",
+	"apihelp-query+titleicons-example": "Titelsymbole der Hauptseite holen"
 }
