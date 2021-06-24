@@ -58,7 +58,11 @@ class Icon implements JsonUnserializable {
 	 */
 	public function __construct( LinkTarget $source, string $icon, string $type, ?LinkTarget $link = null ) {
 		$this->source = $source;
-		$this->icon = $icon;
+		if ( $type === self::ICON_TYPE_FILE ) {
+			$this->icon = Title::newFromText( $icon, NS_FILE )->getPrefixedText();
+		} else {
+			$this->icon = $icon;
+		}
 		$this->type = $type;
 		$this->link = $link;
 	}
