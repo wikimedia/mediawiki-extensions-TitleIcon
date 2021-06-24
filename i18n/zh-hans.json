@@ -1,8 +1,11 @@
 {
 	"@metadata": {
 		"authors": [
-			"Yfdyh000"
+			"Yfdyh000",
+			"Zhang8569"
 		]
 	},
-	"titleicon-desc": "在页面和搜索结果的标题旁显示图标"
+	"titleicon-desc": "在页面和搜索结果的标题旁显示图标",
+	"apihelp-query+titleicons-summary": "归还该页面的标题头像",
+	"apihelp-query+titleicons-example": "获取主页的标题头像。"
 }
