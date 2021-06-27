@@ -25,15 +25,18 @@ namespace MediaWiki\Extension\TitleIcon;
 use Config;
 use HtmlArmor;
 use MediaWiki\Hook\BeforePageDisplayHook;
+use MediaWiki\Hook\ParserAfterParseHook;
 use MediaWiki\Linker\LinkRenderer;
 use MediaWiki\Search\Hook\ShowSearchHitTitleHook;
 use OutputPage;
+use Parser;
 use SearchResult;
 use Skin;
 use SpecialSearch;
+use StripState;
 use Title;
 
-class MainHookHandler implements BeforePageDisplayHook, ShowSearchHitTitleHook {
+class MainHookHandler implements BeforePageDisplayHook, ShowSearchHitTitleHook, ParserAfterParseHook {
 	/** @var IconManager */
 	private $iconManager;
 
@@ -72,9 +75,7 @@ class MainHookHandler implements BeforePageDisplayHook, ShowSearchHitTitleHook {
 			return;
 		}
 
-		$this->iconManager->getIcons(
-			$title
-		);
+		$this->iconManager->getIcons( $title );
 		$html = $this->iconManager->getHTML( $title );
 		if ( strlen( $html ) > 0 ) {
 			$out->addJsConfigVars( 'TitleIconHTML', $html );
@@ -100,12 +101,20 @@ class MainHookHandler implements BeforePageDisplayHook, ShowSearchHitTitleHook {
 			return;
 		}
 
-		$this->iconManager->getIcons(
-			$title
-		);
+		$this->iconManager->getIcons( $title );
 		$html = $this->iconManager->getHTML( $title );
 		if ( strlen( $html ) > 0 ) {
 			$titleSnippet = new HtmlArmor( $html . $this->linkRenderer->makeLink( $title ) );
 		}
+	}
+
+	/**
+	 * @param Parser $parser
+	 * @param string &$text
+	 * @param StripState $stripState
+	 * @return bool|void
+	 */
+	public function onParserAfterParse( $parser, &$text, $stripState ) {
+		$this->iconManager->saveIcons( $parser );
 	}
 }
