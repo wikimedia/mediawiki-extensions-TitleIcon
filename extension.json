@@ -1,6 +1,6 @@
 {
 	"name": "Title Icon",
-	"version": "5.1",
+	"version": "5.2",
 	"author": [
 		"[https://www.mediawiki.org/wiki/User:Cindy.cicalese Cindy Cicalese]"
 	],
@@ -26,7 +26,8 @@
 	"Hooks": {
 		"ParserFirstCallInit": "init",
 		"BeforePageDisplay": "main",
-		"ShowSearchHitTitle": "main"
+		"ShowSearchHitTitle": "main",
+		"ParserAfterParse": "main"
 	},
 	"HookHandlers": {
 		"init": {
