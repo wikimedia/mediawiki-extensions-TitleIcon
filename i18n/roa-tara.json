@@ -4,5 +4,8 @@
 			"Joetaras"
 		]
 	},
-	"titleicon-desc": "Fà vedè le icone jndr'à 'u titole de le pàggene e jndr'à le resultate d'a ricerche"
+	"titleicon-desc": "Fà vedè le icone jndr'à 'u titole de le pàggene e jndr'à le resultate d'a ricerche",
+	"apihelp-query+titleicons-description": "Tuèrne 'na matrice JSON de icone cu titole de le pàggene scacchiate.",
+	"apihelp-query+titleicons-summary": "Tuèrne le icone cu titole de le pàggene scacchiate.",
+	"apihelp-query+titleicons-example": "Pigghie le icone cu titole d'a pàgena prengepàle"
 }
