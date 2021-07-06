@@ -1,8 +1,12 @@
 {
 	"@metadata": {
 		"authors": [
-			"Fitoschido"
+			"Fitoschido",
+			"Jackiezelaya"
 		]
 	},
-	"titleicon-desc": "Muestra un icono en el título de las páginas y los resultados de búsquedas"
+	"titleicon-desc": "Muestra un icono en el título de las páginas y los resultados de búsquedas",
+	"apihelp-query+titleicons-description": "Regresos JSON variedad de iconos de título de las páginas dadas.",
+	"apihelp-query+titleicons-summary": "Devuelve iconos de título de las páginas dadas.",
+	"apihelp-query+titleicons-example": "Obtener iconos de título de la página principal"
 }
