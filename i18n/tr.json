@@ -1,8 +1,10 @@
 {
 	"@metadata": {
 		"authors": [
-			"BaRaN6161 TURK"
+			"BaRaN6161 TURK",
+			"Hedda"
 		]
 	},
-	"titleicon-desc": "Sayfalarda ve arama sonuçlarında başlığın simgesini görüntüler."
+	"titleicon-desc": "Sayfalarda ve arama sonuçlarında başlığın simgesini görüntüler.",
+	"apihelp-query+titleicons-example": "Ana sayfanın başlık simgelerini alın"
 }
