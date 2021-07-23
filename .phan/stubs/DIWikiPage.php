@@ -10,7 +10,7 @@ class DIWikiPage extends SMWDataItem {
 	 * @param int $namespace
 	 * @return DIWikiPage
 	 */
-	public static function newFromText( $text, $namespace = NS_MAIN ) : self {
+	public static function newFromText( $text, $namespace = NS_MAIN ): self {
 		return new self();
 	}
 }

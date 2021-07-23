@@ -116,7 +116,7 @@ class IconManager {
 	 * @param LinkTarget $linkTarget
 	 * @return LinkTarget[]
 	 */
-	private function getCategories( LinkTarget $linkTarget ) : array {
+	private function getCategories( LinkTarget $linkTarget ): array {
 		$result = [];
 		$categories = Title::newFromLinkTarget( $linkTarget )->getParentCategories();
 		foreach ( $categories as $category => $page ) {
@@ -129,7 +129,7 @@ class IconManager {
 	 * @param LinkTarget $linkTarget
 	 * @return Icon[]
 	 */
-	public function getIcons( LinkTarget $linkTarget ) : array {
+	public function getIcons( LinkTarget $linkTarget ): array {
 		$key = self::getKeyForPage( $linkTarget );
 		if ( !isset( $this->icons[$key] ) ) {
 			$this->icons[$key] = [];
@@ -196,7 +196,7 @@ class IconManager {
 	/**
 	 * @param LinkTarget $linkTarget
 	 */
-	private function queryPagePropsIcons( LinkTarget $linkTarget ) : void {
+	private function queryPagePropsIcons( LinkTarget $linkTarget ): void {
 		$title = Title::newFromLinkTarget( $linkTarget );
 		$icons = $this->pageProps->getProperties( $title, Icon::ICON_PROPERTY_NAME );
 		$pageId = $title->getArticleId();
@@ -230,7 +230,7 @@ class IconManager {
 	/**
 	 * @param Parser $parser
 	 */
-	public function saveIcons( Parser $parser ) : void {
+	public function saveIcons( Parser $parser ): void {
 		$key = self::getKeyForPage( $parser->getTitle() );
 		if ( isset( $this->icons[$key] ) ) {
 			$parser->getOutput()->setProperty(
@@ -244,7 +244,7 @@ class IconManager {
 	 * @param LinkTarget $source
 	 * @param Icon $icon
 	 */
-	private function addIcon( LinkTarget $source, Icon $icon ) : void {
+	private function addIcon( LinkTarget $source, Icon $icon ): void {
 		$key = self::getKeyForPage( $source );
 		if ( !isset( $this->icons[$key] ) ) {
 			$this->icons[$key] = [];
@@ -261,7 +261,7 @@ class IconManager {
 	 * @param LinkTarget $source
 	 * @return string
 	 */
-	public function getHTML( LinkTarget $source ) : string {
+	public function getHTML( LinkTarget $source ): string {
 		$key = self::getKeyForPage( $source );
 		if ( !isset( $this->icons[$key] ) ) {
 			return '';
@@ -286,7 +286,7 @@ class IconManager {
 	/**
 	 * @param string|null $flag 'page', 'category', or 'all'
 	 */
-	public function hideTitleIcon( ?string $flag ) :void {
+	public function hideTitleIcon( ?string $flag ): void {
 		switch ( $flag ) {
 			case 'page':
 				$this->hidePageIcons = true;
@@ -307,7 +307,7 @@ class IconManager {
 	/**
 	 * @param LinkTarget $linkTarget
 	 */
-	private function queryHideTitleIcon( LinkTarget $linkTarget ) : void {
+	private function queryHideTitleIcon( LinkTarget $linkTarget ): void {
 		$results = $this->smwInterface->getPropertyValues(
 			$linkTarget,
 			$this->config->get( 'TitleIcon_HideTitleIconPropertyName' )
@@ -321,7 +321,7 @@ class IconManager {
 	 * @param Icon $icon
 	 * @return string
 	 */
-	private function getFileIconHTML( Icon $icon ) : string {
+	private function getFileIconHTML( Icon $icon ): string {
 		$filename = $icon->getIcon();
 		$filetitle = Title::newFromText( $filename, NS_FILE );
 		$imagefile = $this->repoGroup->findFile( $filetitle );
@@ -368,7 +368,7 @@ class IconManager {
 	 * @param Icon $icon
 	 * @return string
 	 */
-	private function getOOUIIconHTML( Icon $icon ) : string {
+	private function getOOUIIconHTML( Icon $icon ): string {
 		$linkTitle = $icon->getLink();
 		if ( !$linkTitle ) {
 			$linkTitle = $icon->getSource();
@@ -384,7 +384,7 @@ class IconManager {
 	 * @param Icon $icon
 	 * @return string
 	 */
-	private function getUnicodeIconHTML( Icon $icon ) : string {
+	private function getUnicodeIconHTML( Icon $icon ): string {
 		$linkTitle = $icon->getLink();
 		if ( !$linkTitle ) {
 			$linkTitle = $icon->getSource();
@@ -399,7 +399,7 @@ class IconManager {
 	 * @param LinkTarget $linkTarget
 	 * @return string
 	 */
-	public static function getKeyForPage( LinkTarget $linkTarget ) : string {
+	public static function getKeyForPage( LinkTarget $linkTarget ): string {
 		return 'ns' . $linkTarget->getNamespace() . ':' . $linkTarget->getDBkey();
 	}
 }

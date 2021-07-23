@@ -39,7 +39,7 @@ class IconManagerTest extends MediaWikiIntegrationTestCase {
 		string $testPageContent,
 		string $testCategoryContent = null,
 		string $testNamespaceContent = null
-	) : array {
+	): array {
 		$result = [];
 		if ( $testNamespaceContent ) {
 			$result['namespace'] = $this->insertPage( '(Main)', $testNamespaceContent, NS_PROJECT )['title'];

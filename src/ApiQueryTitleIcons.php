@@ -59,7 +59,7 @@ class ApiQueryTitleIcons extends ApiQueryBase {
 		$this->jsonCodec = $jsonCodec;
 	}
 
-	public function execute() : void {
+	public function execute(): void {
 		$titles = $this->getPageSet()->getGoodTitles();
 		if ( $titles === [] ) {
 			return;
@@ -79,7 +79,7 @@ class ApiQueryTitleIcons extends ApiQueryBase {
 	/**
 	 * @return string[]
 	 */
-	protected function getExamplesMessages() : array {
+	protected function getExamplesMessages(): array {
 		return [
 			'action=query&prop=titleicons&titles=Main%20Page'
 				=> 'apihelp-query+titleicons-example',
@@ -89,7 +89,7 @@ class ApiQueryTitleIcons extends ApiQueryBase {
 	/**
 	 * @return string
 	 */
-	public function getHelpUrls() : string {
+	public function getHelpUrls(): string {
 		return 'https://www.mediawiki.org/wiki/Special:MyLanguage/Extension:TitleIcon';
 	}
 }

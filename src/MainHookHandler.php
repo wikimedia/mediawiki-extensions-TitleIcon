@@ -65,7 +65,7 @@ class MainHookHandler implements BeforePageDisplayHook, ShowSearchHitTitleHook, 
 	 * @param OutputPage $out
 	 * @param Skin $skin
 	 */
-	public function onBeforePageDisplay( $out, $skin ) : void {
+	public function onBeforePageDisplay( $out, $skin ): void {
 		if ( !$this->config->get( "TitleIcon_EnableIconInPageTitle" ) ) {
 			return;
 		}

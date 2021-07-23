@@ -28,7 +28,7 @@ use MediaWiki\MediaWikiServices;
 use PageProps;
 
 return [
-	'TitleIcon:IconManager' => static function ( MediaWikiServices $services ) : IconManager {
+	'TitleIcon:IconManager' => static function ( MediaWikiServices $services ): IconManager {
 		return new IconManager(
 			$services->getMainConfig(),
 			$services->getParser(),
@@ -42,14 +42,14 @@ return [
 		);
 	},
 	// TODO: remove when support for MW 1.35 is dropped
-	'TitleIcon:PageProps' => static function ( MediaWikiServices $services ) : PageProps {
+	'TitleIcon:PageProps' => static function ( MediaWikiServices $services ): PageProps {
 		if ( method_exists( $services, 'getPageProps' ) ) {
 			return $services->getPageProps();
 		}
 		return PageProps::getInstance();
 	},
 	// TODO: remove when support for MW 1.35 is dropped
-	'TitleIcon:JsonCodec' => static function ( MediaWikiServices $services ) : JsonCodec {
+	'TitleIcon:JsonCodec' => static function ( MediaWikiServices $services ): JsonCodec {
 		if ( method_exists( $services, 'getJsonCodec' ) ) {
 			return $services->getJsonCodec();
 		}

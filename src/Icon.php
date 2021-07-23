@@ -70,28 +70,28 @@ class Icon implements JsonUnserializable {
 	/**
 	 * @return LinkTarget
 	 */
-	public function getSource() : LinkTarget {
+	public function getSource(): LinkTarget {
 		return $this->source;
 	}
 
 	/**
 	 * @return string
 	 */
-	public function getIcon() : string {
+	public function getIcon(): string {
 		return $this->icon;
 	}
 
 	/**
 	 * @return string
 	 */
-	public function getType() : string {
+	public function getType(): string {
 		return $this->type;
 	}
 
 	/**
 	 * @return LinkTarget|null
 	 */
-	public function getLink() : ?LinkTarget {
+	public function getLink(): ?LinkTarget {
 		return $this->link;
 	}
 
@@ -99,7 +99,7 @@ class Icon implements JsonUnserializable {
 	 * @param string $type
 	 * @return bool
 	 */
-	public static function isValidType( string $type ) : bool {
+	public static function isValidType( string $type ): bool {
 		return in_array(
 			$type,
 			[

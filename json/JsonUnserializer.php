@@ -55,5 +55,5 @@ interface JsonUnserializer {
 	 * @param array $array
 	 * @return array
 	 */
-	public function unserializeArray( array $array ) : array;
+	public function unserializeArray( array $array ): array;
 }

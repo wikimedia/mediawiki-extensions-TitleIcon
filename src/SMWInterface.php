@@ -45,7 +45,7 @@ class SMWInterface {
 	/**
 	 * @return bool
 	 */
-	public function isLoaded() : bool {
+	public function isLoaded(): bool {
 		return $this->isLoaded;
 	}
 
@@ -54,7 +54,7 @@ class SMWInterface {
 	 * @param string $propertyName
 	 * @return string[]
 	 */
-	public function getPropertyValues( LinkTarget $linkTarget, string $propertyName ) : array {
+	public function getPropertyValues( LinkTarget $linkTarget, string $propertyName ): array {
 		if ( !$this->isLoaded ) {
 			return [];
 		}
