@@ -6,5 +6,7 @@
 		]
 	},
 	"titleicon-desc": "Sayfalarda ve arama sonuçlarında başlığın simgesini görüntüler.",
+	"apihelp-query+titleicons-description": "Verilen sayfaların JSON başlık simgeleri dizisini döndürür.",
+	"apihelp-query+titleicons-summary": "Verilen sayfaların başlık simgelerini döndürür.",
 	"apihelp-query+titleicons-example": "Ana sayfanın başlık simgelerini alın"
 }
