@@ -233,7 +233,7 @@ class IconManager {
 	public function saveIcons( Parser $parser ): void {
 		$key = self::getKeyForPage( $parser->getTitle() );
 		if ( isset( $this->icons[$key] ) ) {
-			$parser->getOutput()->setProperty(
+			$parser->getOutput()->setPageProperty(
 				Icon::ICON_PROPERTY_NAME,
 				$this->jsonCodec->serialize( $this->icons[$key] )
 			);
