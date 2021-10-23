@@ -22,11 +22,11 @@
 
 $( function () {
 	if ( mw.config.exists( 'TitleIconSelector' ) &&
-		mw.config.exists( 'TitleIconHTML' ) ) {
+		mw.config.exists( 'TitleIconHTML' )
+	) {
 		var selector = mw.config.get( 'TitleIconSelector' ),
 			html = mw.config.get( 'TitleIconHTML' );
-		jQuery( selector ).each( function ( index ) {
-			jQuery( this ).prepend( html );
-		} );
+
+		$( selector ).prepend( html );
 	}
 } );

@@ -82,7 +82,7 @@ class IconManager {
 	 * @param Config $config
 	 * @param Parser $parser
 	 * @param TitleParser $titleParser
-	 * @param Language $contentLangauge
+	 * @param Language $contentLanguage
 	 * @param PageProps $pageProps
 	 * @param RepoGroup $repoGroup
 	 * @param LinkRenderer $linkRenderer
@@ -93,7 +93,7 @@ class IconManager {
 		Config $config,
 		Parser $parser,
 		TitleParser $titleParser,
-		Language $contentLangauge,
+		Language $contentLanguage,
 		PageProps $pageProps,
 		RepoGroup $repoGroup,
 		LinkRenderer $linkRenderer,
@@ -103,7 +103,7 @@ class IconManager {
 		$this->config = $config;
 		$this->parser = $parser;
 		$this->titleParser = $titleParser;
-		$this->contentLanguage = $contentLangauge;
+		$this->contentLanguage = $contentLanguage;
 		$this->pageProps = $pageProps;
 		$this->repoGroup = $repoGroup;
 		$this->linkRenderer = $linkRenderer;
@@ -361,7 +361,7 @@ class IconManager {
 			$imagefile,
 			$frameParams,
 			$handlerParams
-			) . '&nbsp;';
+			) . "\u{00A0}";
 	}
 
 	/**
@@ -377,7 +377,7 @@ class IconManager {
 		return $this->linkRenderer->makeLink(
 			$linkTitle,
 			new HtmlArmor( Linker::makeExternalImage( $url ) )
-		) . "&nbsp;";
+		) . "\u{00A0}";
 	}
 
 	/**
@@ -392,7 +392,7 @@ class IconManager {
 		return $this->linkRenderer->makeLink(
 			$linkTitle,
 			new HtmlArmor( $icon->getIcon() )
-		) . "&nbsp;";
+		) . "\u{00A0}";
 	}
 
 	/**
