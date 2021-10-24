@@ -23,8 +23,8 @@
 namespace MediaWiki\Extension\TitleIcon\Test;
 
 use MediaWiki\Extension\TitleIcon\Icon;
+use MediaWiki\Page\PageReferenceValue;
 use MediaWikiIntegrationTestCase;
-use TitleValue;
 
 /**
  * @group Database
@@ -53,10 +53,10 @@ class IconManagerTest extends MediaWikiIntegrationTestCase {
 	}
 
 	public function provideGetIcons() {
-		$page = new TitleValue( NS_MAIN, 'Test Page' );
-		$category = new TitleValue( NS_CATEGORY, 'Test Category' );
-		$namespace = new TitleValue( NS_PROJECT, '(Main)' );
-		$link = new TitleValue( NS_MAIN, 'Another Page' );
+		$page = PageReferenceValue::localReference( NS_MAIN, 'Test Page' );
+		$category = PageReferenceValue::localReference( NS_CATEGORY, 'Test Category' );
+		$namespace = PageReferenceValue::localReference( NS_PROJECT, '(Main)' );
+		$link = PageReferenceValue::localReference( NS_MAIN, 'Another Page' );
 		yield [
 			'{{#titleicon_file:Icon1.png}}',
 			null,
@@ -247,6 +247,24 @@ class IconManagerTest extends MediaWikiIntegrationTestCase {
 			],
 			'icon with page link'
 		];
+		yield [
+			'{{#titleicon_file:Icon1.png|}}',
+			null,
+			null,
+			[
+				new Icon( $page, 'Icon1.png', Icon::ICON_TYPE_FILE )
+			],
+			'icon with blank page link'
+		];
+		yield [
+			'{{#titleicon_file:Icon1.png|::::}}',
+			null,
+			null,
+			[
+				new Icon( $page, 'Icon1.png', Icon::ICON_TYPE_FILE )
+			],
+			'icon with malformed page link'
+		];
 	}
 
 	/**
@@ -266,7 +284,7 @@ class IconManagerTest extends MediaWikiIntegrationTestCase {
 		string $message
 	) {
 		$manager = $this->getServiceContainer()->getService( 'TitleIcon:IconManager' );
-		$jsonCodec = $this->getServiceContainer()->get( 'TitleIcon:JsonCodec' );
+		$jsonCodec = $this->getServiceContainer()->getJsonCodec();
 		$title = $this->setPageContent( $testPageContent, $testCategoryContent, $testNamespaceContent )['page'];
 
 		$actual = $manager->getIcons( $title );

@@ -22,8 +22,11 @@
 
 namespace MediaWiki\Extension\TitleIcon;
 
+use MalformedTitleException;
 use MediaWiki\Hook\ParserFirstCallInitHook;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Page\PageReference;
+use MediaWiki\Page\PageReferenceValue;
 use Parser;
 
 class InitHookHandler implements ParserFirstCallInitHook {
@@ -64,16 +67,11 @@ class InitHookHandler implements ParserFirstCallInitHook {
 	 * @param string|null $link
 	 */
 	public static function handleFile( Parser $parser, ?string $icon = null, ?string $link = null ) {
-		if ( method_exists( Parser::class, 'getPage' ) ) {
-			$source = $parser->getPage();
-		} else {
-			$source = $parser->getTitle();
-		}
 		MediaWikiServices::getInstance()->getService( "TitleIcon:IconManager" )->parseIcons(
-			$source,
+			$parser->getPage(),
 			Icon::ICON_TYPE_FILE,
 			$icon,
-			$link ? MediaWikiServices::getInstance()->getTitleParser()->parseTitle( $link ) : null
+			self::linkToPageReference( $link )
 		);
 	}
 
@@ -83,16 +81,11 @@ class InitHookHandler implements ParserFirstCallInitHook {
 	 * @param string|null $link
 	 */
 	public static function handleOOUI( Parser $parser, ?string $icon = null, ?string $link = null ) {
-		if ( method_exists( Parser::class, 'getPage' ) ) {
-			$source = $parser->getPage();
-		} else {
-			$source = $parser->getTitle();
-		}
 		MediaWikiServices::getInstance()->getService( "TitleIcon:IconManager" )->parseIcons(
-			$source,
+			$parser->getPage(),
 			Icon::ICON_TYPE_OOUI,
 			$icon,
-			$link ? MediaWikiServices::getInstance()->getTitleParser()->parseTitle( $link ) : null
+			self::linkToPageReference( $link )
 		);
 	}
 
@@ -102,16 +95,27 @@ class InitHookHandler implements ParserFirstCallInitHook {
 	 * @param string|null $link
 	 */
 	public static function handleUnicode( Parser $parser, ?string $icon = null, ?string $link = null ) {
-		if ( method_exists( Parser::class, 'getPage' ) ) {
-			$source = $parser->getPage();
-		} else {
-			$source = $parser->getTitle();
-		}
 		MediaWikiServices::getInstance()->getService( "TitleIcon:IconManager" )->parseIcons(
-			$source,
+			$parser->getPage(),
 			Icon::ICON_TYPE_UNICODE,
 			$icon,
-			$link ? MediaWikiServices::getInstance()->getTitleParser()->parseTitle( $link ) : null
+			self::linkToPageReference( $link )
 		);
+	}
+
+	/**
+	 * @param string|null $link
+	 * @return PageReference|null
+	 */
+	private static function linkToPageReference( ?string $link ) {
+		if ( $link ) {
+			try {
+				$title = MediaWikiServices::getInstance()->getTitleParser()->parseTitle( $link );
+				return PageReferenceValue::localReference( $title->getNamespace(), $title->getDBkey() );
+			} catch ( MalformedTitleException $exception ) {
+				return null;
+			}
+		}
+		return null;
 	}
 }

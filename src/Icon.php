@@ -26,8 +26,10 @@ use InvalidArgumentException;
 use MediaWiki\Json\JsonUnserializable;
 use MediaWiki\Json\JsonUnserializableTrait;
 use MediaWiki\Json\JsonUnserializer;
-use MediaWiki\Linker\LinkTarget;
+use MediaWiki\Page\PageReference;
+use MediaWiki\Page\PageReferenceValue;
 use Title;
+use Wikimedia\Assert\Assert;
 
 class Icon implements JsonUnserializable {
 	use JsonUnserializableTrait;
@@ -38,7 +40,7 @@ class Icon implements JsonUnserializable {
 
 	public const ICON_PROPERTY_NAME = 'titleicons';
 
-	/** @var LinkTarget */
+	/** @var PageReference */
 	private $source;
 
 	/** @var string */
@@ -47,16 +49,17 @@ class Icon implements JsonUnserializable {
 	/** @var string */
 	private $type;
 
-	/** @var LinkTarget|null */
+	/** @var PageReference|null */
 	private $link;
 
 	/**
-	 * @param LinkTarget $source
+	 * @param PageReference $source
 	 * @param string $icon
 	 * @param string $type
-	 * @param LinkTarget|null $link
+	 * @param PageReference|null $link
 	 */
-	public function __construct( LinkTarget $source, string $icon, string $type, ?LinkTarget $link = null ) {
+	public function __construct( PageReference $source, string $icon, string $type, ?PageReference $link = null ) {
+		Assert::parameter( self::isValidType( $type ), '$type', '$type is not a valid icon type' );
 		$this->source = $source;
 		if ( $type === self::ICON_TYPE_FILE ) {
 			$this->icon = Title::newFromText( $icon, NS_FILE )->getPrefixedText();
@@ -68,9 +71,9 @@ class Icon implements JsonUnserializable {
 	}
 
 	/**
-	 * @return LinkTarget
+	 * @return PageReference
 	 */
-	public function getSource(): LinkTarget {
+	public function getSource(): PageReference {
 		return $this->source;
 	}
 
@@ -89,9 +92,9 @@ class Icon implements JsonUnserializable {
 	}
 
 	/**
-	 * @return LinkTarget|null
+	 * @return PageReference|null
 	 */
-	public function getLink(): ?LinkTarget {
+	public function getLink(): ?PageReference {
 		return $this->link;
 	}
 
@@ -99,7 +102,7 @@ class Icon implements JsonUnserializable {
 	 * @param string $type
 	 * @return bool
 	 */
-	public static function isValidType( string $type ): bool {
+	private static function isValidType( string $type ): bool {
 		return in_array(
 			$type,
 			[
@@ -124,12 +127,12 @@ class Icon implements JsonUnserializable {
 			throw new InvalidArgumentException( "Missing Icon field(s)" );
 		}
 		if ( isset( $json['link-dbkey'] ) && isset( $json['link-namespace'] ) ) {
-			$link = Title::newFromText( $json['link-dbkey'], $json['link-namespace'] );
+			$link = PageReferenceValue::localReference( $json['link-namespace'], $json['link-dbkey'] );
 		} else {
 			$link = null;
 		}
 		return new Icon(
-			Title::newFromText( $json['source-dbkey'], $json['source-namespace'] ),
+			PageReferenceValue::localReference( $json['source-namespace'], $json['source-dbkey'] ),
 			$json['icon'],
 			$json['type'],
 			$link
