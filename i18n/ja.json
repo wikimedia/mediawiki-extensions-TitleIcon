@@ -2,8 +2,11 @@
 	"@metadata": {
 		"authors": [
 			"2nd-player",
-			"Shirayuki"
+			"Shirayuki",
+			"MathXplore"
 		]
 	},
-	"titleicon-desc": "ページおよび検索結果のページ名にアイコンを表示する"
+	"titleicon-desc": "ページおよび検索結果のページ名にアイコンを表示する",
+	"apihelp-query+titleicons-summary": "指定されたページのタイトルアイコンを返します。",
+	"apihelp-query+titleicons-example": "メインページのタイトルアイコンを取得する"
 }
