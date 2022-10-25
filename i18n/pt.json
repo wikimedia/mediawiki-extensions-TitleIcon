@@ -4,5 +4,8 @@
 			"Hamilton Abreu"
 		]
 	},
-	"titleicon-desc": "Apresenta um ícone no título das páginas e dos resultados de pesquisas"
+	"titleicon-desc": "Apresenta um ícone no título das páginas e dos resultados de pesquisas",
+	"apihelp-query+titleicons-description": "Devolve uma matriz JSON de ícones de título das páginas fornecidas.",
+	"apihelp-query+titleicons-summary": "Devolve os ícones de título das páginas fornecidas.",
+	"apihelp-query+titleicons-example": "Obter os ícones de título da página principal"
 }
