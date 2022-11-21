@@ -1,0 +1,11 @@
+{
+	"@metadata": {
+		"authors": [
+			"McDutchie"
+		]
+	},
+	"titleicon-desc": "Monstra un icone in le titulo de paginas e in le resultatos de recerca",
+	"apihelp-query+titleicons-description": "Restitue un array JSON de icones de titulo del paginas date.",
+	"apihelp-query+titleicons-summary": "Restitue icones de titulo del paginas date.",
+	"apihelp-query+titleicons-example": "Obtener icones de titulo del pagina principal."
+}
