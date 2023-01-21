@@ -62,7 +62,8 @@ class Icon implements JsonUnserializable {
 		Assert::parameter( self::isValidType( $type ), '$type', '$type is not a valid icon type' );
 		$this->source = $source;
 		if ( $type === self::ICON_TYPE_FILE ) {
-			$this->icon = Title::newFromText( $icon, NS_FILE )->getPrefixedText();
+			$title = Title::newFromText( $icon, NS_FILE );
+			$this->icon = $title ? $title->getPrefixedText() : '';
 		} else {
 			$this->icon = $icon;
 		}
