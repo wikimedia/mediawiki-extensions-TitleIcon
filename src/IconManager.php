@@ -204,7 +204,10 @@ class IconManager {
 			$icons = $this->jsonCodec->unserialize( $icons[$pageId] );
 			if ( $icons ) {
 				foreach ( $icons as $icon ) {
-					$icon = $this->jsonCodec->unserialize( $icon );
+					// TODO: Temporary compatibility for MediaWiki <1.40, see T312589
+					if ( !( $icon instanceof Icon ) ) {
+						$icon = $this->jsonCodec->unserialize( $icon );
+					}
 					if ( $icon ) {
 						$this->addIcon( $page, $icon );
 					}
