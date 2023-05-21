@@ -52,7 +52,7 @@ class IconManagerTest extends MediaWikiIntegrationTestCase {
 		return $result;
 	}
 
-	public function provideGetIcons() {
+	public static function provideGetIcons() {
 		$page = PageReferenceValue::localReference( NS_MAIN, 'Test Page' );
 		$category = PageReferenceValue::localReference( NS_CATEGORY, 'Test Category' );
 		$namespace = PageReferenceValue::localReference( NS_PROJECT, '(Main)' );
