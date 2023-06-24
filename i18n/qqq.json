@@ -5,7 +5,6 @@
 		]
 	},
 	"titleicon-desc": "{{desc|name=Title Icon|url=https://www.mediawiki.org/wiki/Extension:Title_Icon}}",
-	"apihelp-query+titleicons-description": "{{doc-apihelp-description|query+titleicons}}",
 	"apihelp-query+titleicons-summary": "{{doc-apihelp-summary|query+titleicons}}",
 	"apihelp-query+titleicons-example": "{{doc-apihelp-example|query+titleicons}}"
 }
