@@ -6,7 +6,6 @@
 		]
 	},
 	"titleicon-desc": "於頁面標題及搜尋結果顯示圖示",
-	"apihelp-query+titleicons-description": "回傳指定頁面的標題圖示 JSON 陣列。",
 	"apihelp-query+titleicons-summary": "回傳指定頁面的標題圖示。",
 	"apihelp-query+titleicons-example": "取得主頁面的標題圖示"
 }

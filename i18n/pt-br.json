@@ -6,7 +6,6 @@
 		]
 	},
 	"titleicon-desc": "Exibe ícones no título das páginas e em resultados de busca",
-	"apihelp-query+titleicons-description": "Retornar JSON Array de ícones de título das páginas dadas.",
 	"apihelp-query+titleicons-summary": "Retornar os ícones do título das páginas dadas.",
 	"apihelp-query+titleicons-example": "Obter ícones do título da página principal"
 }

@@ -6,7 +6,6 @@
 		]
 	},
 	"titleicon-desc": "تعرض أيقونة في عنواين الصفحات ونتائج البحث",
-	"apihelp-query+titleicons-description": "تُرجع مصفوفة JSON لرموز العنوان للصفحات المحددة.",
 	"apihelp-query+titleicons-summary": "إرجاع أيقونات العنوان للصفحات المحددة.",
 	"apihelp-query+titleicons-example": "احصل على أيقونات عنوان الصفحة الرئيسية"
 }

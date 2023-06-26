@@ -5,7 +5,6 @@
 		]
 	},
 	"titleicon-desc": "Прикажува икона во насловите на страниците и исходот од пребарување",
-	"apihelp-query+titleicons-description": "Дава JSON-строј за насловни иконки на дадените страници.",
 	"apihelp-query+titleicons-summary": "Дава насловни иконки на дадените страници.",
 	"apihelp-query+titleicons-example": "Дај насловни иконки за главната страница"
 }
