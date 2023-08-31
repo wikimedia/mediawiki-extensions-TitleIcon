@@ -4,5 +4,7 @@
 			"Jon Harald Søby"
 		]
 	},
-	"titleicon-desc": "Viser ikon i sidetitler og i søkeresultater"
+	"titleicon-desc": "Viser ikon i sidetitler og i søkeresultater",
+	"apihelp-query+titleicons-summary": "Returnerer tittelikoner for de gitte sidene.",
+	"apihelp-query+titleicons-example": "Hent tittelikoner for hovedsiden"
 }
