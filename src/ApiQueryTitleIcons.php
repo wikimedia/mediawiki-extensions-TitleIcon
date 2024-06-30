@@ -60,7 +60,7 @@ class ApiQueryTitleIcons extends ApiQueryBase {
 	}
 
 	public function execute(): void {
-		$titles = $this->getPageSet()->getGoodTitles();
+		$titles = $this->getPageSet()->getGoodPages();
 		if ( $titles === [] ) {
 			return;
 		}
