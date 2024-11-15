@@ -37,8 +37,8 @@ class IconManagerTest extends MediaWikiIntegrationTestCase {
 
 	private function setPageContent(
 		string $testPageContent,
-		string $testCategoryContent = null,
-		string $testNamespaceContent = null
+		?string $testCategoryContent = null,
+		?string $testNamespaceContent = null
 	): array {
 		$result = [];
 		if ( $testNamespaceContent ) {
