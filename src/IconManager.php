@@ -30,6 +30,7 @@ use Language;
 use Linker;
 use MediaWiki\Json\JsonCodec;
 use MediaWiki\Linker\LinkRenderer;
+use MediaWiki\MainConfigNames;
 use MediaWiki\Page\PageIdentity;
 use MediaWiki\Page\PageReference;
 use Message;
@@ -382,7 +383,10 @@ class IconManager {
 		if ( !$linkTitle ) {
 			$linkTitle = $icon->getSource();
 		}
-		$url = 'resources/lib/ooui/themes/wikimediaui/images/icons/' . $icon->getIcon();
+		$scriptPath = $this->config->has( MainConfigNames::ScriptPath )
+			? $this->config->get( MainConfigNames::ScriptPath )
+			: '';
+		$url = $scriptPath . '/resources/lib/ooui/themes/wikimediaui/images/icons/' . $icon->getIcon();
 		return $this->linkRenderer->makeLink(
 			$linkTitle,
 			new HtmlArmor( Linker::makeExternalImage( $url ) )
