@@ -30,11 +30,6 @@ use MediaWikiIntegrationTestCase;
  * @group Database
  */
 class IconManagerTest extends MediaWikiIntegrationTestCase {
-	/**
-	 * @var string[]
-	 */
-	protected $tablesUsed = [ 'page' ];
-
 	private function setPageContent(
 		string $testPageContent,
 		?string $testCategoryContent = null,
