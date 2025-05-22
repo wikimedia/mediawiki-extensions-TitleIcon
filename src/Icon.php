@@ -28,7 +28,7 @@ use MediaWiki\Json\JsonUnserializableTrait;
 use MediaWiki\Json\JsonUnserializer;
 use MediaWiki\Page\PageReference;
 use MediaWiki\Page\PageReferenceValue;
-use Title;
+use MediaWiki\Title\Title;
 use Wikimedia\Assert\Assert;
 
 class Icon implements JsonUnserializable {

@@ -27,17 +27,17 @@ namespace MediaWiki\Extension\TitleIcon;
 use Config;
 use HtmlArmor;
 use Language;
-use Linker;
 use MediaWiki\Json\JsonCodec;
+use MediaWiki\Linker\Linker;
 use MediaWiki\Linker\LinkRenderer;
 use MediaWiki\MainConfigNames;
 use MediaWiki\Page\PageIdentity;
+use MediaWiki\Page\PageProps;
 use MediaWiki\Page\PageReference;
+use Mediawiki\Title\Title;
 use Message;
-use PageProps;
 use Parser;
 use RepoGroup;
-use Title;
 use TitleParser;
 
 class IconManager {

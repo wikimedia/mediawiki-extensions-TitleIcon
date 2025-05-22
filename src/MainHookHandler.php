@@ -28,13 +28,13 @@ use MediaWiki\Hook\BeforePageDisplayHook;
 use MediaWiki\Hook\ParserAfterParseHook;
 use MediaWiki\Linker\LinkRenderer;
 use MediaWiki\Search\Hook\ShowSearchHitTitleHook;
+use MediaWiki\Title\Title;
 use OutputPage;
 use Parser;
 use SearchResult;
 use Skin;
 use SpecialSearch;
 use StripState;
-use Title;
 
 class MainHookHandler implements BeforePageDisplayHook, ShowSearchHitTitleHook, ParserAfterParseHook {
 	/** @var IconManager */
