@@ -38,6 +38,7 @@ use Mediawiki\Title\Title;
 use Message;
 use Parser;
 use RepoGroup;
+use Sanitizer;
 use TitleParser;
 
 class IconManager {
@@ -404,7 +405,7 @@ class IconManager {
 		}
 		return $this->linkRenderer->makeLink(
 			$linkTitle,
-			new HtmlArmor( $icon->getIcon() )
+			Sanitizer::decodeCharReferences( $icon->getIcon() )
 		) . "\u{00A0}";
 	}
 
