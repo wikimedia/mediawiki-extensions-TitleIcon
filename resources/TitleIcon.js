@@ -20,11 +20,11 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-$( function () {
+$( () => {
 	if ( mw.config.exists( 'TitleIconSelector' ) &&
 		mw.config.exists( 'TitleIconHTML' )
 	) {
-		var selector = mw.config.get( 'TitleIconSelector' ),
+		const selector = mw.config.get( 'TitleIconSelector' ),
 			html = mw.config.get( 'TitleIconHTML' );
 
 		$( selector ).prepend( html );
