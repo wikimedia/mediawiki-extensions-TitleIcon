@@ -20,8 +20,7 @@
 		"TitleIconMagic": "i18n/TitleIconMagic.i18n.php"
 	},
 	"AutoloadNamespaces": {
-		"MediaWiki\\Extension\\TitleIcon\\": "src",
-		"MediaWiki\\Json\\": "json"
+		"MediaWiki\\Extension\\TitleIcon\\": "src/"
 	},
 	"Hooks": {
 		"ParserFirstCallInit": "init",
