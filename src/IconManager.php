@@ -170,12 +170,16 @@ class IconManager {
 				$namespaceText = Message::newFromKey( 'Blanknamespace' )->plain();
 			}
 			$namespacePage = Title::newFromText( $namespaceText, NS_PROJECT );
-			$queryTargets[] = $namespacePage;
-			$this->queryPagePropsIcons( $namespacePage );
-			$namespaceKey = self::getKeyForPage( $namespacePage );
-			if ( isset( $this->icons[$namespaceKey] ) ) {
-				foreach ( $this->icons[$namespaceKey] as $icon ) {
-					$this->addIcon( $page, $icon );
+			// if the Blanknamespace message contains invalid characters (e.g. in the x-xss language),
+			// $namespacePage is null as the title is invalid
+			if ( $namespacePage !== null ) {
+				$queryTargets[] = $namespacePage;
+				$this->queryPagePropsIcons( $namespacePage );
+				$namespaceKey = self::getKeyForPage( $namespacePage );
+				if ( isset( $this->icons[$namespaceKey] ) ) {
+					foreach ( $this->icons[$namespaceKey] as $icon ) {
+						$this->addIcon( $page, $icon );
+					}
 				}
 			}
 		}
