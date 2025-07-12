@@ -112,7 +112,7 @@ class InitHookHandler implements ParserFirstCallInitHook {
 			try {
 				$title = MediaWikiServices::getInstance()->getTitleParser()->parseTitle( $link );
 				return PageReferenceValue::localReference( $title->getNamespace(), $title->getDBkey() );
-			} catch ( MalformedTitleException $exception ) {
+			} catch ( MalformedTitleException ) {
 				return null;
 			}
 		}
