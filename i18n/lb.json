@@ -1,8 +1,9 @@
 {
 	"@metadata": {
 		"authors": [
-			"Robby"
+			"Robby",
+			"Volvox"
 		]
 	},
-	"titleicon-desc": "Weist en 'icon' am Titel vu Säiten an an de Resultater vum Sichen"
+	"titleicon-desc": "Weist e Symbol a Säitentitelen an a Sichresultater"
 }
