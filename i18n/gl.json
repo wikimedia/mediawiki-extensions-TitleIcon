@@ -5,5 +5,7 @@
 			"Toliño"
 		]
 	},
-	"titleicon-desc": "Amosa unha icona no título das páxinas e nos resultados das procuras"
+	"titleicon-desc": "Amosa unha icona no título das páxinas e nos resultados das procuras",
+	"apihelp-query+titleicons-summary": "Devolve as iconas de título das páxinas indicadas.",
+	"apihelp-query+titleicons-example": "Obter as iconas de título da páxina principal"
 }
