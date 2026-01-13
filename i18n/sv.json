@@ -1,8 +1,11 @@
 {
 	"@metadata": {
 		"authors": [
+			"Stefan2255",
 			"WikiPhoenix"
 		]
 	},
-	"titleicon-desc": "Visar ikon i sidrubriker och i sökresultat"
+	"titleicon-desc": "Visar ikon i sidrubriker och i sökresultat",
+	"apihelp-query+titleicons-summary": "Returnerar titelikoner för de angivna sidorna.",
+	"apihelp-query+titleicons-example": "Hämta titelikoner för huvudsidan"
 }
