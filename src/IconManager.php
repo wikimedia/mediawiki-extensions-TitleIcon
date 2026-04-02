@@ -207,12 +207,12 @@ class IconManager {
 		$icons = $this->pageProps->getProperties( $page, Icon::ICON_PROPERTY_NAME );
 		$pageId = $page->getId();
 		if ( $icons && isset( $icons[$pageId] ) ) {
-			$icons = $this->jsonCodec->unserialize( $icons[$pageId] );
+			$icons = $this->jsonCodec->deserialize( $icons[$pageId] );
 			if ( $icons ) {
 				foreach ( $icons as $icon ) {
 					// TODO: Temporary compatibility for MediaWiki <1.40, see T312589
 					if ( !( $icon instanceof Icon ) ) {
-						$icon = $this->jsonCodec->unserialize( $icon );
+						$icon = $this->jsonCodec->deserialize( $icon );
 					}
 					if ( $icon ) {
 						$this->addIcon( $page, $icon );
