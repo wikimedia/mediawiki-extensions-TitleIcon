@@ -2,8 +2,11 @@
 	"@metadata": {
 		"authors": [
 			"Hym411",
+			"Tensama0415",
 			"아라"
 		]
 	},
-	"titleicon-desc": "문서와 검색 결과에 아이콘을 보여줍니다"
+	"titleicon-desc": "문서와 검색 결과에 아이콘을 보여줍니다",
+	"apihelp-query+titleicons-summary": "주어진 문서의 제목 아이콘을 반환합니다.",
+	"apihelp-query+titleicons-example": "메인 페이지의 제목 아이콘을 가져옴"
 }
