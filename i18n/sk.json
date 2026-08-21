@@ -1,0 +1,10 @@
+{
+	"@metadata": {
+		"authors": [
+			"Wizzard"
+		]
+	},
+	"titleicon-desc": "Zobrazuje ikonu v názve na stránkach a vo výsledkoch vyhľadávania",
+	"apihelp-query+titleicons-summary": "Vráti ikony názvov zadaných stránok.",
+	"apihelp-query+titleicons-example": "Získať ikony názvu hlavnej stránky"
+}
